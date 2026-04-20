@@ -10,12 +10,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 
-$userId = (int)$_SESSION['user_id'];
+
 if (!isset($_SESSION['user_id'])) { echo json_encode(['ok'=>false,'error'=>'unauthorized']); exit; }
+$userId = (int)$_SESSION['user_id'];
 
-
-$applicationId= $_POST['application_id'];
+$applicationId= $_POST['application_id'] ?? 0;
 if ($applicationId<= 0) { echo json_encode(['ok'=>false,'error'=>'application_id isnt found']); exit; }
+
+
 
 
 
@@ -57,11 +59,17 @@ if (!$app){
     $stmt->close();
 
     if($ok){
-    $stmt = $mysqli->prepare('UPDATE Applications SET status = 1 WHERE id = ? AND status = 0');
-    $stmt->bind_param('i', $applicationId);
-    $stmt->execute();
-    $stmt->close();
+        $stmt = $mysqli->prepare('UPDATE Applications SET status = 1 WHERE id = ? AND status = 0');
+        $stmt->bind_param('i', $applicationId);
+        $stmt->execute();
+        $stmt->close();
 
-    echo json_encode(['ok' => true], JSON_UNESCAPED_UNICODE);
-    exit;
-    }}
+        echo json_encode(['ok' => true], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    else{
+        echo json_encode(['ok' => false, 'error' => 'Something went wrong'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    }

@@ -31,3 +31,7 @@ body{
     cursor: not-allowed;
     opacity: 0.5;
 }
+.personal__avatar{
+    width: 10vw;
+    height: 10vw;
+}

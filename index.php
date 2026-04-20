@@ -21,19 +21,22 @@
     ?>
     <a href="logout.php">Выйти</a>
 
-    <div class ="accont">
+    <a class ="accont" href = "account.php">
         <p class="account_nickname"><?= $_SESSION['nickname'] ?></p>
-        <img src="users_avatars/user_01.png">
-    </div>
+        <img src="users_avatars/<?=$_SESSION['AvatarFileName']?>">
+    </a>
     <?php endif ?>
     <?php
         if (!$isAuth): 
     ?>
     <section class = "account__enter">
         <h2 class="account__enter_title">Регистрация</h2>
-        <form class="account__enter_inputs" method="post" action="registration.php">
+        <form class="account__enter_inputs" method="post" action="registration.php" enctype="multipart/form-data">
+            <input class = "account__avatar account__input" name = "avatar" type = "file" placeholder = "Avatar image">
             <input class = "account__name account__input" name = "account__name" type = "text" placeholder = "Name Surname" required autocomplete="name">
             <input class = "account__nickname account__input" name = "account__nickname" type = "text" placeholder = "Nickname" required autocomplete="new-username">
+            <input class = "account__desc account__input" name = "account__description" type = "textarea" placeholder = "Your portfolio shortly" required>
+            <input class = "account__exp account__input" name = "account__experience" type = "text" placeholder = "Experience in months" required >
             <select class="account__country account__input" name="country" required>
                 <option value="" selected disabled>Country</option>
                 <option value="RU">Russia</option>
@@ -64,7 +67,7 @@
         <button class = "freelance__button">Find your award</button>
         <?php endif ?>
     </header>
-    <section class="offers offers__considered" style = "display: none">
+    <section class="offers offers__considered">
         <h3 class = "offers__title">Being considered 👀</h3>
         <div class="offers__containers offers__considered_containers">
         </div>
