@@ -45,6 +45,7 @@ $_SESSION['exp_years'] = intdiv($experienceMonths, 12); //intdiv - целочи�
 $_SESSION['exp_months'] = $experienceMonths % 12;
 
 
+
 header('Location: index.php');
 exit;
 

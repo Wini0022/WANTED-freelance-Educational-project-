@@ -23,7 +23,7 @@
 
     <a class ="accont" href = "account.php">
         <p class="account_nickname"><?= $_SESSION['nickname'] ?></p>
-        <img src="users_avatars/<?=$_SESSION['AvatarFileName']?>">
+        <img class = "accont__image" src="users_avatars/<?=$_SESSION['AvatarFileName']?>">
     </a>
     <?php endif ?>
     <?php

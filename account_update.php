@@ -106,11 +106,6 @@ $ok = $stmt->execute();
 $affectedRows = $stmt->affected_rows;
 $stmt->close();
 
-if (!$ok) {
-    $_SESSION['auth_error'] = 'Update failed';
-    header('Location: account.php');
-    exit;
-}
 if ($ok) {
     if ($newAvatarUploaded && $oldAvatar !== 'user_default.png' && $oldAvatar !== $newAvatar) {
         $oldPath = __DIR__ . '/users_avatars/' . $oldAvatar;
@@ -132,6 +127,9 @@ $_SESSION['user_desc'] = $user_desc;
 $_SESSION['AvatarFileName'] = $newAvatar;
 $_SESSION['exp_years'] = intdiv($experience_months, 12);
 $_SESSION['exp_months'] = $experience_months % 12;
+$_SESSION['all_exp_months'] = $experience_months;
+ 
+
 
 $_SESSION['profile_info'] = ($affectedRows > 0) ? 'Profile updated' : 'No changes';
 

@@ -35,3 +35,28 @@ body{
     width: 10vw;
     height: 10vw;
 }
+
+.personal__avatar_upload_input {
+    display: none;
+}
+
+.personal__avatar_upload_btn {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: #111;
+  color: #fff;
+  cursor: pointer;
+}
+
+.personal__avatar_upload_name {
+  margin-left: 10px;
+  font-size: 14px;
+}
+.personal_exp{
+    display: inline-flex;
+}
+.accont__image{
+    width: 12vw;
+    height: 12vw;
+}
