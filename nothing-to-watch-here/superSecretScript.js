@@ -1,27 +1,53 @@
-fetch('super_request.php').then((res) => res.json()
-    .then((res)=>{
-        let offers_without = res['without'] || []
-        let responseRows = res['responseRows'] || []
-        document.querySelector(`.admin__containers_without`).innerHTML = ""
-        if (offers_without.length > 0){ viewCard(offers_without)}
-        else{document.querySelector(`.admin__panel_section-without`).innerHTML = "There're no offers without responses, available to redact."}
-    }
-    )
-)
-viewCard = (offers_without) => {
+fetch('super_request.php')
+  .then((res) => res.json())
+  .then((res) => {
+    let offers_without = res.without || [];
+    let categories = res.categories || [];
+    let currencies = res.currencies || [];
+    let container = document.querySelector('.admin__containers_without');
+
+    container.innerHTML = '';
+    if (offers_without.length > 0) viewCard(offers_without, categories, currencies);
+    else container.innerHTML = "There're no offers without responses, available to redact.";
+  });
+let buildCategories = (categories, selectedId) => {
+  let html = '<option value="">Choose category</option>';
+  for (let i = 0; i < categories.length; i++) {
+    let c = categories[i];
+    html += `<option value="${c.id}" ${Number(c.id) === Number(selectedId) ? 'selected' : ''}>${c.name}</option>`;
+  }
+  return html;
+};
+let buildCurrencies = (currencies, selectedId) => {
+  let html = '<option value="">Choose currency</option>';
+  for (let i = 0; i < currencies.length; i++) {
+    let c = currencies[i];
+    html += `<option value="${c.id}" ${Number(c.id) === Number(selectedId) ? 'selected' : ''}>${c.name}</option>`;
+  }
+  return html;
+};
+
+viewCard = (offers_without, categories, currencies) => {
     for (let i = 0; i < offers_without.length; i++) {
         let cards = document.querySelector(`.admin__containers_without`)
         let card = document.createElement('form')
         let html = `
             <div class = "admin__container_info">
                 <div class = "admin__container_top">
-                    <input class="admin__specilization" name="category" value = "${offers_without[i]['category']}">
+
+                    <select class="admin__category admin__input admin__selector" name="category_id">
+                    ${buildCategories(categories, offers_without[i]['category_id'])}
+                    </select>
+
                     <input class="admin__deadline" name="deadline" value = "${offers_without[i]['deadline']}">
                 </div>
                 <div class="admin__container_texts">
                     <input class="admin__container_title" name="title" value = "${offers_without[i]['title']}">
                     <div class = "admin__container_texts_top">
                         <input name="award" class="admin__container_award" value = "${offers_without[i]['award']}">
+                        <select class="admin__currency admin__input admin__selector" name="currency_id">
+                        ${buildCurrencies(currencies, offers_without[i]['currency_id'])}
+                        </select>                        
                         <input name="award_desc" class = "admin__container_award_desc" value = "${offers_without[i]['award_desc']}">
                     </div>
                     <input class="admin__container_desc" name="description" value = "${offers_without[i]['description']}">
@@ -42,12 +68,22 @@ viewCard = (offers_without) => {
     
         cards.appendChild(card)
 
+        let categoryType = card.querySelector('.admin__category');
+        if (categoryType && typeof TomSelect !== 'undefined' && !categoryType.tomselect) { //если элемент найден и на нем еще нет скрипта tomselect (библиотеки)
+        new TomSelect(categoryType, { create: false, maxOptions: 200 }); //сама библиотека. create не дает создавать вручную
+        }
+        let currencyType = card.querySelector('.admin__currency');
+        if (currencyType && typeof TomSelect !== 'undefined' && !currencyType.tomselect) { //если элемент найден и на нем еще нет скрипта tomselect (библиотеки)
+        new TomSelect(currencyType, { create: false, maxOptions: 200 }); //сама библиотека. create не дает создавать вручную
+        }
+
     }
 }
 initCardForm = (card) =>{
         let submit = card.querySelector('.admin__submit');
         let cancel = card.querySelector('.admin__cancel');
-        let fields = [...card.querySelectorAll('input[name]:not([type="hidden"]):not([type="submit"]):not([type="button"])')];
+        let fields = [...card.querySelectorAll('input[name]:not([type="hidden"]):not([type="submit"]):not([type="button"]), select[name], textarea[name]')];
+
 
         let initial = {};
         fields.forEach(f => initial[f.name] = f.value);

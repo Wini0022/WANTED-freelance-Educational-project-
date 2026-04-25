@@ -11,7 +11,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $_SESSION['name']?>'s Admin panel</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
 </head>
 <body>
     <h2 class="admin__title">Welcome to admin panel, <?= $_SESSION['name']?>! 👑</h2>
@@ -56,7 +56,7 @@
                         <div class="admin__review">
                             <div class="admin__review_top">
                                 <div class="admin__review_top_user">
-                                    <img src="users_avatars/content" class="admin__review_avatar">
+                                    <img src="../users_avatars/user_default.png" class="admin__review_avatar">
                                     <div>
                                         <p class="admin__review_name">Name</p>
                                         <p class="admin__review_exp">Experience</p>
@@ -78,7 +78,12 @@
         </div>
 
     </div>
-    <script src = "./superSecretScript.js"></script>
+    <link rel="stylesheet" href="./vendor/tom-select/tom-select.css">
+    <script src="./vendor/tom-select/tom-select.complete.min.js"></script>
+    <script src="./superSecretScript.js"></script> <!--npm init -y, npm i tom-select, mkdir -p nothing-to-watch-here/vendor/tom-select && \cp node_modules/tom-select/dist/css/tom-select.css nothing-to-watch-here/vendor/tom-select/ && \cp node_modules/tom-select/dist/js/tom-select.complete.min.js nothing-to-watch-here/vendor/tom-select/ -->
+
+    <!--<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script> В ПУБЛИЧНОМ ХОСТИНГЕ РАЗОРХИРОВАТЬ--> 
+
     <script src = "./without_update.js"></script>
 </body>
 </html>

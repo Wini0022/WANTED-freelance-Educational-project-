@@ -8,6 +8,12 @@ $stmt->execute();
 $without = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
+$catResult = $mysqli->query("SELECT id, name FROM categories ORDER BY name");
+$categories = $catResult ? $catResult->fetch_all(MYSQLI_ASSOC) : [];
+
+$curResult = $mysqli->query("SELECT id, name FROM currencies ORDER BY name");
+$currencies = $curResult ? $curResult->fetch_all(MYSQLI_ASSOC) : [];
+
 $stmt = $mysqli->prepare("    
     SELECT
         a.*,
@@ -30,5 +36,7 @@ $stmt->close();
 
 echo json_encode([
     'without' => $without,
-    'responseRows' => $responseRows
+    'responseRows' => $responseRows,
+    'categories' => $categories,
+    'currencies' => $currencies
 ], JSON_UNESCAPED_UNICODE);
