@@ -23,6 +23,7 @@ viewCard = (offers_available) => {
                     <h3 class="offers__container_title">${offers_available[i]['title']}</h3>
                     <div class = "offers__container_texts_top">
                         <h3 class="offers__container_award">${offers_available[i]['award']}</h3>
+                        <p class = "offers__container_award_desc">${(offers_available[i]['currency'] || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '')}</p>                        
                         <p class = "offers__container_award_desc">${offers_available[i]['award_desc']}</p>
                     </div>
                     <p class="offers__container_desc">${offers_available[i]['description']}</p>
@@ -72,6 +73,7 @@ viewConsidered = (offers_considered) =>{
                     <h3 class="offers__container_title">${offers_considered[i]['title']}</h3>
                     <div class = "offers__container_texts_top">
                         <h3 class="offers__container_award">${offers_considered[i]['award']}</h3>
+                        <p class = "offers__container_award_desc">${(offers_considered[i]['currency'] || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '')}</p>  
                         <p class = "offers__container_award_desc">${offers_considered[i]['award_desc']}</p>
                     </div>
                     <p class="offers__container_desc">${offers_considered[i]['description']}</p>

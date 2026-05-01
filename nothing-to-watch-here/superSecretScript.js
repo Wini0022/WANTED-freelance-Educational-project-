@@ -1,6 +1,7 @@
-fetch('super_request.php')
-  .then((res) => res.json())
-  .then((res) => {
+const loadOffers = () => {
+  fetch('super_request.php')
+    .then((res) => res.json())
+    .then((res) => {
     let offers_without = res.without || [];
     let categories = res.categories || [];
     let currencies = res.currencies || [];
@@ -10,6 +11,9 @@ fetch('super_request.php')
     if (offers_without.length > 0) viewCard(offers_without, categories, currencies);
     else container.innerHTML = "There're no offers without responses, available to redact.";
   });
+
+};
+
 let buildCategories = (categories, selectedId) => {
   let html = '<option value="">Choose category</option>';
   for (let i = 0; i < categories.length; i++) {
@@ -24,8 +28,9 @@ let buildCurrencies = (currencies, selectedId) => {
     let c = currencies[i];
     html += `<option value="${c.id}" ${Number(c.id) === Number(selectedId) ? 'selected' : ''}>${c.name}</option>`;
   }
-  return html;
-};
+  return html;}
+
+loadOffers();
 
 viewCard = (offers_without, categories, currencies) => {
     for (let i = 0; i < offers_without.length; i++) {
@@ -54,6 +59,8 @@ viewCard = (offers_without, categories, currencies) => {
                 </div>
                 <input class = "admin__submit admin__input" name = "admin__submit" type = "submit" value = "Enter">    
                 <input class = "admin__cancel admin__input" type = "button" value = "Cancel">  
+                <button type="button" class="admin__delete" data-id="${offers_without[i]['id']}">Delete</button>
+
                 <input type="hidden" name="application_id" value="${offers_without[i]['id']}">
             </div>
         `
@@ -106,3 +113,13 @@ initCardForm = (card) =>{
         sync();
         });
 }
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.admin__delete');
+  if (!btn) return;
+  const fd = new FormData();
+  fd.append('application_id', btn.dataset.id);
+  fetch('offer_delete.php', { method: 'POST', body: fd })
+    .then(r => r.json())
+    .then(d => { if (d.ok) loadOffers(); else console.log(d.error); })
+    .catch(console.error);
+});

@@ -37,42 +37,9 @@
             </div>
 
             <div class="admin__containers admin__containers_response">
-                <div class="admin__panel_container">
-                    <div class = "admin__container_info">
-                        <div class = "admin__container_top">
-                            <p class="admin__specilization">specilization</p>
-                        </div>
-                        <div class="admin__container_texts">
-                            <h3 class="admin__container_title">title</h3>
-                            <div class = "admin__container_texts_top">
-                                <h3 class="admin__container_award">award</h3>
-                                <p class = "admin__container_award_desc">award_desc</p>
-                            </div>
-                            <p class="admin__container_desc">description</p>
-                        </div>
-                    </div>
-                    <div class="admin__container_reviews">
+                <div class="admin__panel_container admin__response_container">
 
-                        <div class="admin__review">
-                            <div class="admin__review_top">
-                                <div class="admin__review_top_user">
-                                    <img src="../users_avatars/user_default.png" class="admin__review_avatar">
-                                    <div>
-                                        <p class="admin__review_name">Name</p>
-                                        <p class="admin__review_exp">Experience</p>
-                                    </div>
-                                </div>
-                                <p class="admin__review_number">number</p>
-                            </div>
-                            <button class = "delete_container">Delete</button>
-                            <p class="admin__review_desc">User description</p>
-                            <div class="admin__review_buttons">
-                                <button class = "admin__review_button admin__review_approve admin__review_response_approve">Claim award</button>
-                                <button class = "admin__review_button admin__review_reject admin__review_response_reject">Reject</button>                                
-                            </div>
-                        </div>
-
-                    </div>
+                </div>
             </div>
 
         </div>
@@ -80,10 +47,10 @@
     </div>
     <link rel="stylesheet" href="./vendor/tom-select/tom-select.css">
     <script src="./vendor/tom-select/tom-select.complete.min.js"></script>
-    <script src="./superSecretScript.js"></script> <!--npm init -y, npm i tom-select, mkdir -p nothing-to-watch-here/vendor/tom-select && \cp node_modules/tom-select/dist/css/tom-select.css nothing-to-watch-here/vendor/tom-select/ && \cp node_modules/tom-select/dist/js/tom-select.complete.min.js nothing-to-watch-here/vendor/tom-select/ -->
+    <script src="./superSecretScript.js"></script>
+    <script src="./suffering_response.js"></script>  <!--npm init -y, npm i tom-select, mkdir -p nothing-to-watch-here/vendor/tom-select && \cp node_modules/tom-select/dist/css/tom-select.css nothing-to-watch-here/vendor/tom-select/ && \cp node_modules/tom-select/dist/js/tom-select.complete.min.js nothing-to-watch-here/vendor/tom-select/ -->
 
     <!--<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script> В ПУБЛИЧНОМ ХОСТИНГЕ РАЗОРХИРОВАТЬ--> 
 
-    <script src = "./without_update.js"></script>
 </body>
 </html>

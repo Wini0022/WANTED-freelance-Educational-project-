@@ -7,14 +7,24 @@ $userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
 
 if ($userId > 0) {
     // Available: только 0/1, и только те, на которые текущий user еще не откликался
-    $stmt = $mysqli->prepare("SELECT a.* FROM Applications a WHERE a.status IN (0, 1) AND NOT EXISTS ( SELECT 1 FROM requests r WHERE r.application_id = a.id AND r.user_id = ? )");
+    $stmt = $mysqli->prepare("SELECT a.*, c.name AS category, cu.name AS currency FROM Applications a LEFT JOIN categories c ON c.id = a.category_id LEFT JOIN currencies cu ON cu.id = a.currency_id WHERE a.status IN (0, 1) AND NOT EXISTS ( SELECT 1 FROM requests r WHERE r.application_id = a.id AND r.user_id = ? )");
     $stmt->bind_param('i', $userId);
     $stmt->execute();
     $available = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
 
     // Being considered: заявки, на которые этот user уже откликнулся
-    $stmt = $mysqli->prepare("SELECT a.* FROM Applications a INNER JOIN requests r ON r.application_id = a.id WHERE r.user_id = ? AND a.status IN (0, 1) GROUP BY a.id");
+    $stmt = $mysqli->prepare("
+    SELECT DISTINCT
+        a.*,
+        c.name AS category,
+        cu.name AS currency
+    FROM Applications a
+    INNER JOIN requests r ON r.application_id = a.id
+    LEFT JOIN categories c ON c.id = a.category_id
+    LEFT JOIN currencies cu ON cu.id = a.currency_id
+    WHERE r.user_id = ? AND a.status IN (0, 1)
+"); // DISTINCT убирает повторы
     $stmt->bind_param('i', $userId);
     $stmt->execute();
     $considered = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);

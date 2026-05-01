@@ -46,11 +46,11 @@
         <div class="personal_country">
             <select class="personal__country personal__input" name="country">
                 <option value="" <?=  $currentCountry === '' ? 'selected' : '' ?>>Country</option>
-                <option value="RU" <?=  $currentCountry === 'RU' ? 'selected' : '' ?>>Russia</option>
-                <option value="US" <?=  $currentCountry === 'US' ? 'selected' : '' ?>>United States</option>
-                <option value="DE" <?=  $currentCountry === 'DE' ? 'selected' : '' ?>>Germany</option>
-                <option value="KZ" <?=  $currentCountry === 'KZ' ? 'selected' : '' ?>>Kazakhstan</option>
-                <option value="OTHER" <?=  $currentCountry === 'OTHER' ? 'selected' : '' ?>>Other</option>
+                <option value="RU" <?=  $currentCountry === 'RU' ? 'selected' : '' ?>>Russia 🇷🇺</option>
+                <option value="US" <?=  $currentCountry === 'US' ? 'selected' : '' ?>>United States 🇺🇸</option>
+                <option value="DE" <?=  $currentCountry === 'DE' ? 'selected' : '' ?>>Germany 🇩🇪</option>
+                <option value="KZ" <?=  $currentCountry === 'KZ' ? 'selected' : '' ?>>Kazakhstan 🇰🇿</option>
+                <option value="OTHER" <?=  $currentCountry === 'OTHER' ? 'selected' : '' ?>>Other 🇺🇳</option>
             </select>
         </div>
         <input class = "personal__submit personal__input" name = "personal__submit" type = "submit" value = "Enter">    

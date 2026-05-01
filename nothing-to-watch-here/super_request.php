@@ -14,9 +14,12 @@ $categories = $catResult ? $catResult->fetch_all(MYSQLI_ASSOC) : [];
 $curResult = $mysqli->query("SELECT id, name FROM currencies ORDER BY name");
 $currencies = $curResult ? $curResult->fetch_all(MYSQLI_ASSOC) : [];
 
+
 $stmt = $mysqli->prepare("    
     SELECT
         a.*,
+        a.id AS application_id,
+        r.id AS request_id,
         r.user_id,
         r.message,
         u.name,
@@ -24,11 +27,17 @@ $stmt = $mysqli->prepare("
         u.avatar,
         u.user_desc,
         u.country,
-        u.experience_months
-    FROM Applications a
-    JOIN requests r ON r.application_id = a.id
-    JOIN Users u ON u.id = r.user_id
-    WHERE a.status = 1");
+        u.experience_months,
+        c.name  AS category_name,
+        cu.name AS currency_name
+
+        FROM Applications a
+        JOIN requests r ON r.application_id = a.id
+        JOIN Users u ON u.id = r.user_id
+        LEFT JOIN categories c ON c.id = a.category_id
+        LEFT JOIN currencies cu ON cu.id = a.currency_id
+
+        WHERE a.status = 1");
     
 $stmt->execute();
 $responseRows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);

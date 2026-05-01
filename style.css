@@ -41,12 +41,12 @@ body{
 }
 
 .personal__avatar_upload_btn {
-  display: inline-block;
-  padding: 8px 14px;
-  border-radius: 8px;
-  background: #111;
-  color: #fff;
-  cursor: pointer;
+    border-radius: 8px;
+    padding: 0.5vw;
+    margin-block: 1vw;
+    background: black;
+    color: white;
+    display: inline-flex;
 }
 
 .personal__avatar_upload_name {
