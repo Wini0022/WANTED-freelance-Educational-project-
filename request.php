@@ -7,7 +7,7 @@ $userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
 
 if ($userId > 0) {
     // Available: только 0/1, и только те, на которые текущий user еще не откликался
-    $stmt = $mysqli->prepare("SELECT a.*, c.name AS category, cu.name AS currency FROM Applications a LEFT JOIN categories c ON c.id = a.category_id LEFT JOIN currencies cu ON cu.id = a.currency_id WHERE a.status IN (0, 1) AND NOT EXISTS ( SELECT 1 FROM requests r WHERE r.application_id = a.id AND r.user_id = ? )");
+    $stmt = $mysqli->prepare("SELECT a.*, c.name AS category, cu.name AS currency FROM Applications a LEFT JOIN categories c ON c.id = a.category_id LEFT JOIN currencies cu ON cu.id = a.currency_id WHERE a.status IN (0, 1) AND a.executor_id IS NULL AND NOT EXISTS ( SELECT 1 FROM requests r WHERE r.application_id = a.id AND r.user_id = ? )");
     $stmt->bind_param('i', $userId);
     $stmt->execute();
     $available = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
@@ -23,7 +23,7 @@ if ($userId > 0) {
     INNER JOIN requests r ON r.application_id = a.id
     LEFT JOIN categories c ON c.id = a.category_id
     LEFT JOIN currencies cu ON cu.id = a.currency_id
-    WHERE r.user_id = ? AND a.status IN (0, 1)
+    WHERE r.user_id = ? AND a.status IN (0, 1) AND r.status = 0
 "); // DISTINCT убирает повторы
     $stmt->bind_param('i', $userId);
     $stmt->execute();
@@ -31,7 +31,7 @@ if ($userId > 0) {
     $stmt->close();
 } else {
     // неавторизованному показываем обычный список
-    $result = $mysqli->query("SELECT * FROM Applications WHERE status IN (0, 1)");
+    $result = $mysqli->query("SELECT * FROM Applications WHERE status IN (0, 1) AND executor_id IS NULL");
     $available = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     $considered = [];
 }

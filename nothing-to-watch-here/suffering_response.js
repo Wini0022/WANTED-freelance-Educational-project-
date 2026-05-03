@@ -6,7 +6,7 @@ fetch('super_request.php')
     console.log(responseRows)
     let grouped = {}
 
-    for (row of responseRows){
+    for (const row of responseRows){
         if (!grouped[row.application_id]) grouped[row.application_id] = {app: row, reviews: []} 
         grouped[row.application_id].reviews.push(row)
     }
@@ -35,6 +35,10 @@ viewResponseCard = (groups) => {
             <p class="admin__review_exp">${row.experience_months}</p>
             <p class="admin__review_desc">${row.user_desc || 'No description'}</p>
             <p class="admin__review_number">№ ${r + 1}</p>
+        </div>
+        <div class = "admin__review_buttons">
+                <button type="button" data-action="approve" data-request-id="${row.request_id}" class="admin__review_approve admin__review_button">Approve</button>
+                <button type="button" data-action="reject" data-request-id="${row.request_id}" class="admin__review_delete admin__review_button">Reject</button>
         </div>
         `;
     }
@@ -66,4 +70,19 @@ viewResponseCard = (groups) => {
         cards.appendChild(card)
 
     }
-    }
+}
+
+document.addEventListener('click', async(e) =>{
+    const btn = e.target.closest('.admin__review_button');
+    if (!btn) return;
+    
+    const fd = new FormData()
+    fd.append('request_id', btn.dataset.requestId)
+    fd.append('action', btn.dataset.action)
+
+    const res = await fetch('response_decision.php', { method: 'POST', body: fd });
+    const data = await res.json();
+
+    if (data.ok) location.reload();
+    else alert(data.error || 'Action failed');
+})

@@ -4,7 +4,7 @@ const loadOffers = () => {
       let offers_available = res['available']
       let offers_considered = res['considered']
       document.querySelector(`.offers__available_containers`).innerHTML = ""
-      document.querySelector(`.offers__available_containers`).innerHTML = ""
+      document.querySelector(`.offers__considered_containers`).innerHTML = ""
       if (offers_available.length > 0){ viewCard(offers_available)}
       else{document.querySelector(`.offers__available_containers`).innerHTML = "There're no avalaible offers now."}
       if (offers_considered.length > 0){ viewConsidered(offers_considered)}

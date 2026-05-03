@@ -21,7 +21,7 @@ if ($applicationId<= 0) { echo json_encode(['ok'=>false,'error'=>'application_id
 
 
 
-$stmt = $mysqli->prepare('SELECT status FROM Applications WHERE id=?');
+$stmt = $mysqli->prepare('SELECT status, executor_id FROM Applications WHERE id=?');
 $stmt->bind_param('i', $applicationId); //привязка к ?
 $stmt->execute(); 
 $app = $stmt->get_result()->fetch_assoc();
@@ -36,6 +36,11 @@ $currentStatus = (int)$app['status'];
 
 if ($currentStatus !== 0 && $currentStatus !== 1) {
     echo json_encode(['ok' => false, 'error' => 'status isnt allowed'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+if ($app['executor_id'] !== null) {
+    echo json_encode(['ok' => false, 'error' => 'application already assigned'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 

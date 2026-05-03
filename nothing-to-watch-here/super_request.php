@@ -37,7 +37,7 @@ $stmt = $mysqli->prepare("
         LEFT JOIN categories c ON c.id = a.category_id
         LEFT JOIN currencies cu ON cu.id = a.currency_id
 
-        WHERE a.status = 1");
+        WHERE a.status = 1 AND r.status = 0");
     
 $stmt->execute();
 $responseRows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
