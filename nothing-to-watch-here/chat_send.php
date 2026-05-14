@@ -6,8 +6,6 @@ require_once __DIR__ . '/../connect.php';
 if (!isset($_SESSION['user_id'])) { echo json_encode(['ok'=>false,'error'=>'unauthorized']); exit; }
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') { echo json_encode(['ok'=>false,'error'=>'method']); exit; }
 
-echo json_encode(['ok'=>true], JSON_UNESCAPED_UNICODE);
-
 $userId = (int)$_SESSION['user_id'];
 $chatId = (int)($_POST['chat_id'] ?? 0);
 $body = trim((string)($_POST['body'] ?? ''));
