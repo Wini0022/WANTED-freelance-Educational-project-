@@ -58,6 +58,35 @@
             </div>
 
         </div>
+        <div class="admin__panel_section admin__panel_section-done">
+
+            <div class="admin__pnael_container-trigger">Already done</div> 
+            <div class = "admin__containers_searching">
+                <!--Как нибудь попозже-->
+            </div>
+
+            <div class="admin__containers admin__containers_done">
+                <div class="admin__panel_container admin__done_container">
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="admin__panel_section admin__panel_section-archive">
+
+            <div class="admin__pnael_container-trigger">Archivated</div> 
+            <div class = "admin__containers_searching">
+                <!--Как нибудь попозже-->
+            </div>
+
+            <div class="admin__containers admin__containers_archive">
+                <div class="admin__panel_container admin__archive_container">
+
+                </div>
+            </div>
+
+        </div>
 
     </div>
     <link rel="stylesheet" href="./vendor/tom-select/tom-select.css">
@@ -65,6 +94,9 @@
     <script src="./superSecretScript.js"></script>
     <script src="./suffering_response.js"></script>  <!--npm init -y, npm i tom-select, mkdir -p nothing-to-watch-here/vendor/tom-select && \cp node_modules/tom-select/dist/css/tom-select.css nothing-to-watch-here/vendor/tom-select/ && \cp node_modules/tom-select/dist/js/tom-select.complete.min.js nothing-to-watch-here/vendor/tom-select/ -->
     <script src="./chats.js"></script>   
+    <script src="./offers_done.js"></script>
+    <script src="./archive.js"></script>
+
 
     <!--<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script> В ПУБЛИЧНОМ ХОСТИНГЕ РАЗОРХИРОВАТЬ--> 
 

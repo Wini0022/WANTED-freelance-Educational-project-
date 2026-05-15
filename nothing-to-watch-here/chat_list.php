@@ -26,7 +26,7 @@ $stmt = $mysqli->prepare("
     JOIN Applications a ON a.id = c.application_id
     LEFT JOIN categories cat ON cat.id = a.category_id
     LEFT JOIN currencies cur ON cur.id = a.currency_id
-    WHERE c.owner_id = ? OR c.executor_id = ?
+    WHERE (c.owner_id = ? OR c.executor_id = ?) AND a.status = 2
     ORDER BY c.id DESC
 ");
 $stmt->bind_param('ii', $userId, $userId);

@@ -22,7 +22,7 @@ if ($applicationId <= 0) {
 
 $archivedStatus = 9; // архив
 
-$stmt = $mysqli->prepare('UPDATE Applications SET status = ? WHERE id = ? AND status IN (0, 1) LIMIT 1');
+$stmt = $mysqli->prepare('UPDATE Applications SET status = ?, archived_at = NOW() WHERE id = ? AND status IN (0, 1, 2, 3) LIMIT 1');
 $stmt->bind_param('ii', $archivedStatus, $applicationId);
 $ok = $stmt->execute();
 $affected = $stmt->affected_rows;
