@@ -25,7 +25,10 @@ $oldExecutorId = (int)($app['executor_id'] ?? 0);
 if ($action === 'complete') {
     $stmt = $mysqli->prepare('UPDATE Applications SET status = 3 WHERE id = ? AND status = 2 LIMIT 1');
     $stmt->bind_param('i', $applicationId);
-} else { 
+    $ok = $stmt->execute();
+    $affected = $stmt->affected_rows;
+    $stmt->close();
+} elseif ($action === 'reject_candidate') { 
     $stmt = $mysqli->prepare('UPDATE Applications SET executor_id = NULL, status = 0 WHERE id = ? AND status = 2 LIMIT 1');
     $stmt->bind_param('i', $applicationId);
     $ok = $stmt->execute();
@@ -43,11 +46,10 @@ if ($action === 'complete') {
         $stmt->execute();
         $stmt->close();
     }
+} else {
+    echo json_encode(['ok' => false, 'error' => 'invalid action'], JSON_UNESCAPED_UNICODE);
+    exit;
 }
-
-$ok = $stmt->execute();
-$affected = $stmt->affected_rows;
-$stmt->close();
 
 if (!$ok) {
     echo json_encode(['ok' => false, 'error' => 'update failed'], JSON_UNESCAPED_UNICODE);

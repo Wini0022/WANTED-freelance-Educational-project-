@@ -51,7 +51,7 @@ $peerAvatar = trim((string)($row['peer_avatar'] ?? 'user_default.png'));
 
 $applicationId = (int)($row['application_id']);
 
-$appStatus = $row['application_status']
+$appStatus = $row['application_status'];
 
 
 ?>
