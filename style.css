@@ -60,3 +60,7 @@ body{
     width: 12vw;
     height: 12vw;
 }
+.admin__search_chip-active{
+    background: #363636;
+    color: white;
+}

@@ -1,15 +1,19 @@
+let allOffers = [];
+let allCategories = [];
+let allCurrencies = [];
+let searchText = '';
+let selectedSort = 'default';
+let selectedCategoryId = 0;
+
 const loadOffers = () => {
   fetch('super_request.php')
     .then((res) => res.json())
     .then((res) => {
-    let offers_without = res.without || [];
-    let categories = res.categories || [];
-    let currencies = res.currencies || [];
-    let container = document.querySelector('.admin__containers_without');
+    allOffers = res.without || [];
+    allCategories = res.categories || [];
+    allCurrencies = res.currencies || [];
 
-    container.innerHTML = '';
-    if (offers_without.length > 0) viewCard(offers_without, categories, currencies);
-    else container.innerHTML = "There're no offers without responses, available to redact.";
+    renderWithout();
   });
 
 };
@@ -31,6 +35,79 @@ let buildCurrencies = (currencies, selectedId) => {
   return html;}
 
 loadOffers();
+
+function renderWithout() {
+  const container = document.querySelector('.admin__containers_without');
+  container.innerHTML = '';
+
+  const searched = allOffers.filter((offer) => {
+  const text = `
+    ${offer.title || ''}
+    ${offer.description || ''}
+    ${offer.award_desc || ''}
+    ${offer.category || ''}
+    ${offer.deadline || ''}
+    ${offer.award || ''}
+    ${offer.currency || ''}
+  `.toLowerCase();
+    return text.includes(searchText);
+  });
+
+  const chipMap = new Map();
+  for (const offer of searched) {
+    chipMap.set(Number(offer.category_id), offer.category);
+  }
+
+  if (selectedCategoryId && !chipMap.has(selectedCategoryId)) {
+    selectedCategoryId = 0;
+  }
+
+  renderSearchCategories(chipMap);
+
+  const visible = selectedCategoryId
+    ? searched.filter((offer) => Number(offer.category_id) === selectedCategoryId)
+    : searched;
+
+  const sortedOffers = [...visible]; //копия visible
+
+  if (selectedSort === 'award_asc') {
+    sortedOffers.sort((a, b) => Number(a.award) - Number(b.award)); //важно в заметках
+  }
+
+  if (selectedSort === 'award_desc') {
+    sortedOffers.sort((a, b) => Number(b.award) - Number(a.award));
+  }
+
+  if (sortedOffers.length > 0) viewCard(sortedOffers, allCategories, allCurrencies);
+  else container.innerHTML = 'Nothing found.';
+}
+
+function renderSearchCategories(chipMap) {
+  const box = document.querySelector('.admin__search_categories');
+  if (!box) return;
+
+  box.innerHTML = '';
+
+  const allBtn = document.createElement('button');
+  allBtn.type = 'button';
+  allBtn.className = selectedCategoryId === 0
+    ? 'admin__search_chip admin__search_chip-active'
+    : 'admin__search_chip';
+  allBtn.dataset.id = '0';
+  allBtn.textContent = 'All';
+  box.appendChild(allBtn);
+
+  for (const [id, name] of chipMap) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = Number(id) === selectedCategoryId
+      ? 'admin__search_chip admin__search_chip-active'
+      : 'admin__search_chip';
+    btn.dataset.id = String(id);
+    btn.textContent = name;
+    box.appendChild(btn);
+  }
+}
 
 viewCard = (offers_without, categories, currencies) => {
     for (let i = 0; i < offers_without.length; i++) {
@@ -113,7 +190,36 @@ initCardForm = (card) =>{
         sync();
         });
 }
-document.addEventListener('click', (e) => {
+document.addEventListener('input', (e) => {
+  const searchInput = e.target.closest('.admin__search_input');
+  if (!searchInput) return;
+
+  searchText = searchInput.value.trim();
+  renderWithout();
+});
+
+  document.addEventListener('click', (e) => {
+    const categoryButton = e.target.closest('.admin__search_chip');
+    if (categoryButton) {
+      selectedCategoryId = Number(categoryButton.dataset.id);
+      renderWithout();
+      return;
+    }
+
+  const filterTrigger = e.target.closest('.admin__search_sort-trigger');
+  if (filterTrigger) {
+    const divSearchOptions = filterTrigger.nextElementSibling;
+    divSearchOptions.hidden = !divSearchOptions.hidden;
+    return;
+  }
+
+  const sortButton = e.target.closest('.admin__search_sort-option');
+  if (sortButton) {
+    selectedSort = sortButton.dataset.sort;
+    renderWithout();
+    return;
+  }
+
   const btn = e.target.closest('.admin__delete');
   if (!btn) return;
   const fd = new FormData();

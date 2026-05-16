@@ -3,7 +3,21 @@ header('Content-Type: application/json; charset=utf-8');
 require_once '../auth_bootstep.php';
 require_once '../connect.php';
 
-$stmt = $mysqli->prepare("SELECT a.* FROM Applications a WHERE a.status IN (0) AND NOT EXISTS ( SELECT 1 FROM requests r WHERE r.application_id = a.id)");
+$stmt = $mysqli->prepare("
+    SELECT
+        a.*,
+        c.name AS category,
+        cu.name AS currency
+    FROM Applications a
+    LEFT JOIN categories c ON c.id = a.category_id
+    LEFT JOIN currencies cu ON cu.id = a.currency_id
+    WHERE a.status IN (0)
+      AND NOT EXISTS (
+        SELECT 1
+        FROM requests r
+        WHERE r.application_id = a.id
+      )
+");
 $stmt->execute();
 $without = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
