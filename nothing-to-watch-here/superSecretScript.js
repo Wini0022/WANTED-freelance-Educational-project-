@@ -193,6 +193,7 @@ initCardForm = (card) =>{
 document.addEventListener('input', (e) => {
   const searchInput = e.target.closest('.admin__search_input');
   if (!searchInput) return;
+  if (!searchInput.closest('.admin__panel_section-without')) return;
 
   searchText = searchInput.value.trim();
   renderWithout();
@@ -200,21 +201,21 @@ document.addEventListener('input', (e) => {
 
   document.addEventListener('click', (e) => {
     const categoryButton = e.target.closest('.admin__search_chip');
-    if (categoryButton) {
+    if (categoryButton && categoryButton.closest('.admin__panel_section-without')) {
       selectedCategoryId = Number(categoryButton.dataset.id);
       renderWithout();
       return;
     }
 
   const filterTrigger = e.target.closest('.admin__search_sort-trigger');
-  if (filterTrigger) {
+  if (filterTrigger && filterTrigger.closest('.admin__panel_section-without')) {
     const divSearchOptions = filterTrigger.nextElementSibling;
     divSearchOptions.hidden = !divSearchOptions.hidden;
     return;
   }
 
   const sortButton = e.target.closest('.admin__search_sort-option');
-  if (sortButton) {
+  if (sortButton && sortButton.closest('.admin__panel_section-without')) {
     selectedSort = sortButton.dataset.sort;
     renderWithout();
     return;
@@ -222,6 +223,7 @@ document.addEventListener('input', (e) => {
 
   const btn = e.target.closest('.admin__delete');
   if (!btn) return;
+  if (!btn.closest('.admin__panel_section-without')) return;
   const fd = new FormData();
   fd.append('application_id', btn.dataset.id);
   fetch('offer_delete.php', { method: 'POST', body: fd })
