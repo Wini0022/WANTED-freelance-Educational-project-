@@ -11,13 +11,16 @@ if (!isset($_SESSION['user_id'])) {
 $userId = (int)$_SESSION['user_id'];
 $chatId = (int)($_GET['chat_id'] ?? 0);
 
+$isAdmin = ((int)($_SESSION['user_role'] ?? 0) === 1);
+$isAdminInt = $isAdmin ? 1 : 0;
+
 if ($chatId <= 0) {
     echo json_encode(['ok' => false, 'error' => 'chat_id required'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-$stmt = $mysqli->prepare('SELECT owner_id, executor_id, owner_last_read_message_id, executor_last_read_message_id FROM chats WHERE id = ? AND (owner_id = ? OR executor_id = ?) LIMIT 1');
-$stmt->bind_param('iii', $chatId, $userId, $userId);
+$stmt = $mysqli->prepare('SELECT owner_id, executor_id, owner_last_read_message_id, executor_last_read_message_id FROM chats WHERE id = ? AND (? = 1 OR owner_id = ? OR executor_id = ?) LIMIT 1');
+$stmt->bind_param('iiii', $chatId, $isAdminInt ,$userId, $userId);
 $stmt->execute();
 $chat = $stmt->get_result()->fetch_assoc();
 $stmt->close();

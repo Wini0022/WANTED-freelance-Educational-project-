@@ -7,6 +7,9 @@ if (!isset($_SESSION['user_id'])) { echo json_encode(['ok'=>false,'error'=>'unau
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') { echo json_encode(['ok'=>false,'error'=>'method']); exit; }
 
 $userId = (int)$_SESSION['user_id'];
+$isAdmin = ((int)($_SESSION['user_role'] ?? 0) === 1);
+$isAdminInt = $isAdmin ? 1 : 0;
+
 $chatId = (int)($_POST['chat_id'] ?? 0);
 $body = trim((string)($_POST['body'] ?? ''));
 
@@ -15,8 +18,8 @@ if ($chatId <= 0 || $body === '') {
     exit;
 }
 
-$stmt = $mysqli->prepare('SELECT id FROM chats WHERE id = ? AND (owner_id = ? OR executor_id = ?) LIMIT 1');
-$stmt->bind_param('iii', $chatId, $userId, $userId);
+$stmt = $mysqli->prepare('SELECT id FROM chats WHERE id = ? AND (? = 1 OR owner_id = ? OR executor_id = ?) LIMIT 1');
+$stmt->bind_param('iiii', $chatId, $isAdminInt , $userId, $userId);
 $stmt->execute();
 $chat = $stmt->get_result()->fetch_assoc();
 $stmt->close();

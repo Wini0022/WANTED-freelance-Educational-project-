@@ -71,6 +71,9 @@ document.addEventListener('click', async (e) => {
   }
 
   await loadArchive();
+  if (action === 'republish') {
+    loadOffers();
+  }
 });
 
 loadArchive();

@@ -217,6 +217,14 @@ document.addEventListener('input', (e) => {
   const sortButton = e.target.closest('.admin__search_sort-option');
   if (sortButton && sortButton.closest('.admin__panel_section-without')) {
     selectedSort = sortButton.dataset.sort;
+
+    document
+      .querySelectorAll('.admin__panel_section-without .admin__search_sort-option')
+      .forEach((button) => button.classList.remove('admin__search_chip-active'));
+    sortButton.classList.add('admin__search_chip-active');
+
+
+
     renderWithout();
     return;
   }

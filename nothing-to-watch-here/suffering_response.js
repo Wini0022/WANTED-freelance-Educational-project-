@@ -159,21 +159,27 @@ renderResponses();});
 document.addEventListener('click', async(e) =>{
 
     const sortButton = e.target.closest('.admin__response_search_sort-option');
-    if (sortButton) {
+    if (sortButton && sortButton.closest('.admin__panel_section-responses')) {
         responseSelectedSort = sortButton.dataset.sort;
+
+    document
+      .querySelectorAll('.admin__panel_section-responses .admin__search_sort-option')
+      .forEach((button) => button.classList.remove('admin__search_chip-active'));
+
+    sortButton.classList.add('admin__search_chip-active');
         renderResponses();
         return;
     }
 
     const filterTrigger = e.target.closest('.admin__response_search_sort-trigger');
-    if (filterTrigger) {
+    if (filterTrigger && filterTrigger.closest('.admin__panel_section-responses')) {
         const divSearchOptions = filterTrigger.nextElementSibling;
         divSearchOptions.hidden = !divSearchOptions.hidden;
         return;
     }
 
     const categoryButton = e.target.closest('.admin__response_search_chip');
-    if (categoryButton) {
+    if (categoryButton && categoryButton.closest('.admin__panel_section-responses')) {
         responseSelectedCategoryId = Number(categoryButton.dataset.id);
 
         renderResponses();

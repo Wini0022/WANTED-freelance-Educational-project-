@@ -8,6 +8,7 @@ $userId = (int)$_SESSION['user_id'];
 $chatId = (int)($_GET['chat_id'] ?? 0);
 
 $isAdmin = ((int)($_SESSION['user_role'] ?? 0) === 1);
+$isAdminInt = $isAdmin ? 1 : 0;
 $cancelHref = $isAdmin
   ? './superSecret_adminRoom.php'
   : '../index.php'; 
@@ -31,10 +32,10 @@ $stmt = $mysqli->prepare("
     JOIN Applications a ON a.id = c.application_id
     JOIN users u_owner ON u_owner.id = c.owner_id
     JOIN users u_exec  ON u_exec.id  = c.executor_id
-    WHERE c.id = ? AND (c.owner_id = ? OR c.executor_id = ?)
+    WHERE c.id = ? AND (? = 1 OR c.owner_id = ? OR c.executor_id = ?)
     LIMIT 1
 ");
-$stmt->bind_param('iiiii', $userId, $userId, $chatId, $userId, $userId);
+$stmt->bind_param('iiiiii', $userId, $userId, $chatId, $isAdminInt, $userId, $userId);
 $stmt->execute();
 $row = $stmt->get_result()->fetch_assoc();
 $stmt->close();

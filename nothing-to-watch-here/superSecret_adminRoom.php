@@ -28,7 +28,7 @@
                     <div class = "admin__search_sort">
                         <button type="button" class="admin__search_sort-trigger">Filter</button>
                         <div class = "admin__search_sort_options" hidden>
-                            <button type="button" class="admin__search_sort-option" data-sort="default">Default</button>
+                            <button type="button" class="admin__search_sort-option admin__search_chip-active" data-sort="default">Default</button>
                             <button type="button" class="admin__search_sort-option" data-sort="award_desc">Award: high to low</button>
                             <button type="button" class="admin__search_sort-option" data-sort="award_asc">Award: low to high</button>
                         </div>  
@@ -53,7 +53,7 @@
                     <div class="admin__search_sort">
                         <button type="button" class="admin__search_sort-trigger admin__response_search_sort-trigger">Filter</button>
                         <div class="admin__search_sort_options" hidden>
-                            <button type="button" class="admin__search_sort-option admin__response_search_sort-option" data-sort="default">Default</button>
+                            <button type="button" class="admin__search_sort-option admin__response_search_sort-option admin__search_chip-active" data-sort="default" >Default</button>
                             <button type="button" class="admin__search_sort-option admin__response_search_sort-option" data-sort="award_desc">Award: high to low</button>
                             <button type="button" class="admin__search_sort-option admin__response_search_sort-option" data-sort="award_asc">Award: low to high</button>
                         </div>
@@ -76,7 +76,20 @@
 
             <div class="admin__pnael_container-trigger">Chats</div> 
             <div class = "admin__containers_searching">
-                <!--Как нибудь попозже-->
+                <input class="admin__search_input admin__chats_search_input" type="search" placeholder="Search offer or people...">
+
+                <div class="admin__searching_bottom">
+                    <div class="admin__search_sort">
+                        <button type="button" class="admin__search_sort-trigger admin__chats_search_sort-trigger">Filter</button>
+                        <div class="admin__search_sort_options" hidden>
+                            <button type="button" class="admin__search_sort-option admin__chats_search_sort-option admin__search_chip-active" data-sort="default" >Default</button>
+                            <button type="button" class="admin__search_sort-option admin__chats_search_sort-option" data-sort="award_desc">Award: high to low</button>
+                            <button type="button" class="admin__search_sort-option admin__chats_search_sort-option" data-sort="award_asc">Award: low to high</button>
+                        </div>
+                    </div>
+
+                    <div class="admin__search_categories admin__chats_search_categories"></div>
+                </div>
             </div>
 
             <div class="admin__containers admin__containers_chat">
