@@ -54,19 +54,32 @@ try {
 
 $stmt = $mysqli->prepare("
   SELECT
-    a.id,
-    a.title,
-    a.description,
-    a.award,
-    a.award_desc,
-    a.deadline,
-    cat.name AS category_name,
-    cur.name AS currency_name,
-    a.archived_at,
-    GREATEST(0, TIMESTAMPDIFF(DAY, NOW(), DATE_ADD(a.archived_at, INTERVAL 30 DAY))) AS days_left
+      a.id,
+      c.id AS chat_id,
+      c.application_id,
+      c.owner_id,
+      c.executor_id,
+      c.created_at,
+      a.title,
+      a.category_id,
+      cat.name AS category_name,
+      cur.name AS currency_name,
+      a.description AS application_description,
+      a.deadline,
+      a.award,
+      a.award_desc,
+      u.name,
+      u.nickname,
+      u.avatar,
+      u.user_desc,
+      u.experience_months,
+      a.archived_at,
+      GREATEST(0, TIMESTAMPDIFF(DAY, NOW(), DATE_ADD(a.archived_at, INTERVAL 30 DAY))) AS days_left
   FROM Applications a
   LEFT JOIN categories cat ON cat.id = a.category_id
   LEFT JOIN currencies cur ON cur.id = a.currency_id
+  LEFT JOIN chats c ON a.id = c.application_id
+  LEFT JOIN Users u ON u.id = c.executor_id
   WHERE a.status = 9
   ORDER BY a.archived_at DESC
 "); //GREATEST(0, ...) → если уже просрочено, не дает минус, возвращает 0. TIMESTAMPDIFF разница в днях от сейчас до даты удаления.

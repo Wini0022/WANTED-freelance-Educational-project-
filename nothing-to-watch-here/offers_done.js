@@ -1,22 +1,80 @@
-const container = document.querySelector('.admin__containers_done');
+const doneContainer = document.querySelector('.admin__containers_done');
+
+let allDoneRows = [];
+let doneSearchText = '';
+let doneSelectedSort = 'default';
+let doneSelectedCategoryId = 0;
+
+
 async function loadDone(){
     const res = await fetch('./done_list.php')
     const data = await res.json()
     
-    if (!container) return;
-    container.innerHTML = '';
 
-    const rows = data.done || [];
-    if (!rows.length) {
-        container.innerHTML = 'There are no completed offers.';
+    allDoneRows = data.done || []
+    renderDone()
+}
+function renderDone(){
+    if (!doneContainer) return;
+    doneContainer.innerHTML = '';
+
+    if (!allDoneRows.length) {
+        doneContainer.innerHTML = 'There are no completed offers.';
         return;
     }
-    for (let i = 0; i < rows.length; i++) {
-        const card = document.createElement('div')
-        const a = rows[i];
 
+    const searched = allDoneRows.filter((offer) => {
+        const text = `
+        ${offer.title || ''}
+        ${offer.application_description || ''}
+        ${offer.award_desc || ''}
+        ${offer.category_name || ''}
+        ${offer.deadline || ''}
+        ${offer.award || ''}
+        ${offer.currency_name || ''}
+        ${offer.nickname || ''}
+        ${offer.user_desc || ''}
+        ${offer.experience_months || ''}
+        `.toLowerCase();
+
+        return text.includes(doneSearchText);
+    });
+
+    const chipMap = new Map();
+
+    for (const offer of searched) {
+        chipMap.set(Number(offer.category_id), offer.category_name);
+    }
+
+    if (doneSelectedCategoryId && !chipMap.has(doneSelectedCategoryId)) {
+        doneSelectedCategoryId = 0;
+    }
+
+    renderDoneCategories(chipMap);
+
+    const visible = doneSelectedCategoryId
+    ? searched.filter((offer) => Number(offer.category_id) === doneSelectedCategoryId)
+    : searched;
+
+    const sorted = [...visible];
+
+    if (doneSelectedSort === 'award_asc') {
+        sorted.sort((a, b) => Number(a.award) - Number(b.award));
+    }
+
+    if (doneSelectedSort === 'award_desc') {
+        sorted.sort((a, b) => Number(b.award) - Number(a.award));
+    }
+
+    if (!sorted.length) {
+        doneContainer.innerHTML = 'There are no completed offers.';
+        return;
+    }
+
+    for (const a of sorted) {
+        const card = document.createElement('div');
         const html = `
-        
+            
         <div class="admin__container_info">
             <div class="admin__container_top">
                 <p class="admin__specilization">${a.category_name}</p>
@@ -28,7 +86,7 @@ async function loadDone(){
                     <p class="admin__container_award_currency">${(a.currency_name || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '')}</p>
                     <p class="admin__container_award_desc">${a.award_desc}</p>
                 </div>
-                <p class="admin__container_desc">${a.description}</p>
+                <p class="admin__container_desc">${a.application_description}</p>
             </div>
             <div class="admin__archive_actions">
                 <button type="button" class="open__done_chat" data-chat-id="${a.chat_id}">Open chat</button>
@@ -38,11 +96,41 @@ async function loadDone(){
         `
         card.innerHTML = html
         card.classList.add('admin__done_container')
-        container.appendChild(card)
+        doneContainer.appendChild(card)
     }
 
 }
-container.addEventListener('click', async (e) => {
+
+function renderDoneCategories(chipMap) {
+  const box = document.querySelector('.admin__done_search_categories');
+  if (!box) return;
+
+  box.innerHTML = '';
+
+  const allBtn = document.createElement('button');
+  allBtn.type = 'button';
+  allBtn.className = doneSelectedCategoryId === 0
+    ? 'admin__search_chip admin__done_search_chip admin__search_chip-active'
+    : 'admin__search_chip admin__done_search_chip';
+  allBtn.dataset.id = '0';
+  allBtn.textContent = 'All';
+  box.appendChild(allBtn);
+
+  for (const [id, name] of chipMap) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = Number(id) === doneSelectedCategoryId
+      ? 'admin__search_chip admin__done_search_chip admin__search_chip-active'
+      : 'admin__search_chip admin__done_search_chip';
+    btn.dataset.id = String(id);
+    btn.textContent = name;
+    box.appendChild(btn);
+  }
+}
+// Кнопка чата
+if (doneContainer) {
+
+doneContainer.addEventListener('click', async (e) => {
   const openBtn = e.target.closest('.open__done_chat');
   if (openBtn) {
     window.location.href = `chat_room.php?chat_id=${openBtn.dataset.chatId}`;
@@ -65,6 +153,51 @@ container.addEventListener('click', async (e) => {
     return;
   }
 
-  await loadDone();
+    await loadDone();
+    await loadArchive();
 });
+
+// Все для Filter 
+document.addEventListener('input', (e) => {
+  const searchInput = e.target.closest('.admin__done_search_input');
+  if (!searchInput) return;
+
+  doneSearchText = searchInput.value.trim().toLowerCase();
+    renderDone();
+});
+
+document.addEventListener('click', async (e) => {
+  const sortButton = e.target.closest('.admin__done_search_sort-option');
+
+  if (sortButton && sortButton.closest('.admin__panel_section-done')) {
+    doneSelectedSort = sortButton.dataset.sort;
+
+    document
+      .querySelectorAll('.admin__panel_section-done .admin__search_sort-option')
+      .forEach((button) => button.classList.remove('admin__search_chip-active'));
+
+    sortButton.classList.add('admin__search_chip-active');
+    renderDone();
+    return;
+  }
+
+  const filterTrigger = e.target.closest('.admin__done_search_sort-trigger');
+
+  if (filterTrigger && filterTrigger.closest('.admin__panel_section-done')) {
+    const divSearchOptions = filterTrigger.nextElementSibling;
+    divSearchOptions.hidden = !divSearchOptions.hidden;
+    return;
+  }
+
+  const categoryButton = e.target.closest('.admin__done_search_chip');
+
+  if (categoryButton && categoryButton.closest('.admin__panel_section-done')) {
+    doneSelectedCategoryId = Number(categoryButton.dataset.id);
+    renderDone();
+    return;
+  }
+});
+
+}
+
 loadDone()
