@@ -155,11 +155,48 @@
 
         </div>
 
+        <div class = "admin__make">
+            <button type = "button" class = "admin__make_button-trigger">Make a new one!</button>
+            <div class="admin__make_panel">
+                <div class = "make__panel_top">
+                    <button type="button" class="make__panel_close">Close</button>
+                    <h1 class="make__panel_title">Making new offer</h1>
+                </div>
+
+                <form class = "make__panel_containers" action="make_offer.php" method="post">
+                    <select class="make__category make__container" name="category_id">
+                        <option value="">Category</option>
+                    </select>
+                    <input class="make__category_new make__container" name="category_new" type="text" placeholder="Or make a new one...">
+
+                    <input class="make__container" name="deadline" type="text" placeholder="Deadline">
+                    <input class="make__container" name="title" type="text" placeholder="Title" required>
+                    <textarea class="make__container" name="description" placeholder="Description" required></textarea>
+
+                    <div class="make__containers_money">
+                        <input class="make__container" name="award" type="number" min="0" step="0.01" placeholder = "Award amount">
+                        <select class="make__currency make__container" name="currency_id">
+                            <option value="">Currency</option>
+                        </select>
+                        <input class="make__container" name="award_desc" type="text" placeholder = "Award description">
+                    </div>
+
+                    <div class = "make__example">
+                        <!--Позже-->
+                    </div>
+                    <input type="submit" class = "admin__make_submit" value="Make">
+                </form>
+            </div>
+        </div>  
+
     </div>
     <link rel="stylesheet" href="./vendor/tom-select/tom-select.css">
-    <script src="./vendor/tom-select/tom-select.complete.min.js"></script>
+
+    <script src="./vendor/tom-select/tom-select.complete.min.js"></script> <!--npm init -y, npm i tom-select, mkdir -p nothing-to-watch-here/vendor/tom-select && \cp node_modules/tom-select/dist/css/tom-select.css nothing-to-watch-here/vendor/tom-select/ && \cp node_modules/tom-select/dist/js/tom-select.complete.min.js nothing-to-watch-here/vendor/tom-select/ -->
+
     <script src="./superSecretScript.js"></script>
-    <script src="./suffering_response.js"></script>  <!--npm init -y, npm i tom-select, mkdir -p nothing-to-watch-here/vendor/tom-select && \cp node_modules/tom-select/dist/css/tom-select.css nothing-to-watch-here/vendor/tom-select/ && \cp node_modules/tom-select/dist/js/tom-select.complete.min.js nothing-to-watch-here/vendor/tom-select/ -->
+    <script src = "make.js"></script>
+    <script src="./suffering_response.js"></script>  
     <script src="./chats.js"></script>   
     <script src="./offers_done.js"></script>
     <script src="./archive.js"></script>
