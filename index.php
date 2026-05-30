@@ -67,20 +67,54 @@
         <button class = "freelance__button">Find your award</button>
         <?php endif ?>
     </header>
-    <section class="offers offers__considered">
-        <h3 class = "offers__title">Being considered 👀</h3>
-        <div class="offers__containers offers__considered_containers">
-        </div>
-    </section>
-    <section class="offers offers__approved" style = "display: none">
-        <h3 class = "offers__title">Your approved offers 💪</h3>
-        <div class="offers__containers offers__approved_containers">
-        </div>
-    </section>
-    <section class="offers offers__available">
-        <h3 class = "offers__title">Available offers 🌍 </h3>
-        <div class="offers__containers offers__available_containers">
+    <section class="offers offers__considered" data-section="considered">
+        <button type="button" class="offers__section_trigger">Being considered 👀</button>
 
+        <div class="offers__section_body">
+
+            <div class="offers__containers_searching">
+                <input class="offers__search_input offers__considered_search_input" type="search" placeholder="Search offer...">
+
+                <div class="offers__searching_bottom">
+                    <div class="offers__search_sort">
+                        <button type="button" class="offers__search_sort-trigger offers__considered_search_sort-trigger">Filter</button>
+
+                        <div class="offers__search_sort_options" hidden>
+                            <button type="button" class="offers__search_sort-option offers__considered_search_sort-option offers__search_chip-active" data-sort="default">Default</button>
+                            <button type="button" class="offers__search_sort-option offers__considered_search_sort-option" data-sort="award_desc">Award: high to low</button>
+                            <button type="button" class="offers__search_sort-option offers__considered_search_sort-option" data-sort="award_asc">Award: low to high</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="offers__search_categories offers__considered_search_categories"></div>
+            </div>
+
+            <div class="offers__containers offers__considered_containers"></div>
+        </div>
+    </section>
+
+    <section class="offers offers__available" data-section="available">
+        <button type="button" class="offers__section_trigger">Available offers 🌍</button>
+        <div class="offers__section_body">
+
+            <div class="offers__containers_searching">
+                <input class="offers__search_input offers__available_search_input" type="search" placeholder="Search offer...">
+
+                <div class="offers__searching_bottom">
+                    <div class="offers__search_sort">
+                        <button type="button" class="offers__search_sort-trigger offers__available_search_sort-trigger">Filter</button>
+
+                        <div class="offers__search_sort_options" hidden>
+                            <button type="button" class="offers__search_sort-option offers__available_search_sort-option offers__search_chip-active" data-sort="default">Default</button>
+                            <button type="button" class="offers__search_sort-option offers__available_search_sort-option" data-sort="award_desc">Award: high to low</button>
+                            <button type="button" class="offers__search_sort-option offers__available_search_sort-option" data-sort="award_asc">Award: low to high</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="offers__search_categories offers__available_search_categories"></div>
+            </div>
+
+            <div class="offers__containers offers__available_containers"></div>
         </div>
     </section>
     <script>

@@ -19,7 +19,7 @@
 
         <div class="admin__panel_section admin__panel_section-without">
 
-            <div class="admin__pnael_container-trigger">Without response</div> 
+            <div class="admin__panel_container-trigger">Without response</div> 
             <div class = "admin__containers_searching">
                 <input class="admin__search_input" type="search" placeholder="Search offer...">
 
@@ -45,7 +45,7 @@
         </div>
         <div class="admin__panel_section admin__panel_section-responses">
 
-            <div class="admin__pnael_container-trigger">Responses</div> 
+            <div class="admin__panel_container-trigger">Responses</div> 
             <div class = "admin__containers_searching">
                 <input class="admin__search_input admin__response_search_input" type="search" placeholder="Search offer or people...">
 
@@ -74,7 +74,7 @@
 
         <div class="admin__panel_section admin__panel_section-chats">
 
-            <div class="admin__pnael_container-trigger">Chats</div> 
+            <div class="admin__panel_container-trigger">Chats</div> 
             <div class = "admin__containers_searching">
                 <input class="admin__search_input admin__chats_search_input" type="search" placeholder="Search offer or people...">
 
@@ -101,7 +101,7 @@
         </div>
         <div class="admin__panel_section admin__panel_section-done">
 
-            <div class="admin__pnael_container-trigger">Already done</div> 
+            <div class="admin__panel_container-trigger">Already done</div> 
             <div class = "admin__containers_searching">
                 <input class="admin__search_input admin__done_search_input" type="search" placeholder="Search offer...">
 
@@ -129,7 +129,7 @@
 
         <div class="admin__panel_section admin__panel_section-archive">
 
-            <div class="admin__pnael_container-trigger">Archivated</div> 
+            <div class="admin__panel_container-trigger">Archivated</div> 
             <div class = "admin__containers_searching">
                 <input class="admin__search_input admin__archivated_search_input" type="search" placeholder="Search offer...">
 
