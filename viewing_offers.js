@@ -13,6 +13,11 @@ let chatsSearchText = '';
 let chatsSelectedSort = 'default';
 let chatsSelectedCategoryId = 0;
 
+let allDone = [];
+let doneSearchText = '';
+let doneSelectedSort = 'default';
+let doneSelectedCategoryId = 0;
+
 const loadOffers = () => {
   fetch('request.php')
     .then((res) => res.json())
@@ -20,9 +25,11 @@ const loadOffers = () => {
         allAvailable = res.available || [];
         allConsidered = res.considered || [];
         allChats = res.chats || [];
+        allDone = res.done || [];
         renderAvailable();
         renderConsidered();
         renderChats();
+        renderDone();
     });
 };
 
@@ -344,6 +351,107 @@ function renderChatsCategories(chipMap) {
 
 }
 
+function renderDone() {
+    const container = document.querySelector('.offers__done_containers');
+    if (!container) return;
+
+    const searching = document.querySelector('.offers__done .offers__containers_searching');
+
+    if (searching) {
+        searching.hidden = !allDone.length;
+    }
+
+    if (!allDone.length) {
+        container.innerHTML = "There're no done offers now.";
+        return;
+    }
+
+    container.innerHTML = '';
+
+    const searched = allDone.filter((offer) => {
+        return getOfferSearchText(offer).includes(doneSearchText);
+    });
+
+    const chipMap = new Map();
+
+    for (const offer of searched) {
+        chipMap.set(Number(offer.category_id), offer.category_name);
+    }
+
+    if (doneSelectedCategoryId && !chipMap.has(doneSelectedCategoryId)) {
+        doneSelectedCategoryId = 0;
+    }
+
+    renderDoneCategories(chipMap);
+
+    const visible = doneSelectedCategoryId
+    ? searched.filter((offer) => Number(offer.category_id) === doneSelectedCategoryId)
+    : searched;
+
+    const sorted = sortOffers(visible, doneSelectedSort);
+
+    if (!sorted.length) {
+        container.innerHTML = "No done offers match your search.";
+        return;
+    }
+
+    for (const offer of sorted) {
+        const card = document.createElement('div');
+
+        card.innerHTML = `
+            <div>
+                <div class = "offers__container_top">
+                    <p class="offers__specilization">${offer.category_name}</p>
+                    <p class="offers__deadline">${offer.deadline}</p>
+                </div>
+                <div class="offers__container_texts">
+                    <h3 class="offers__container_title">${offer.title}</h3>
+                    <div class = "offers__container_texts_top">
+                        <h3 class="offers__container_award">${offer.award}</h3>
+                        <p class = "offers__container_award_desc">${(offer.currency_name || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '')}</p>
+                        <p class = "offers__container_award_desc">${offer.award_desc}</p>
+                    </div>
+                    <p class="offers__container_desc">${offer.application_description}</p>
+                    <div class = "offers__chat_buttons">
+                        <button type="button" class="open-chat offers__done_review_button" data-chat-id="${offer.chat_id}">Open chat</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        card.classList.add('offers__container');
+        container.appendChild(card);
+    }
+}
+
+function renderDoneCategories(chipMap) {
+  const box = document.querySelector('.offers__done_search_categories');
+  if (!box) return;
+
+  box.innerHTML = '';
+
+  const allBtn = document.createElement('button');
+  allBtn.type = 'button';
+  allBtn.className = doneSelectedCategoryId === 0
+    ? 'offers__search_chip offers__done_search_chip offers__search_chip-active'
+    : 'offers__search_chip offers__done_search_chip';
+  allBtn.dataset.id = '0';
+  allBtn.textContent = 'All';
+  box.appendChild(allBtn);
+
+  for (const [id, name] of chipMap) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = Number(id) === doneSelectedCategoryId
+      ? 'offers__search_chip offers__done_search_chip offers__search_chip-active'
+      : 'offers__search_chip offers__done_search_chip';
+    btn.dataset.id = String(id);
+    btn.textContent = name || 'No category';
+    box.appendChild(btn);
+  }
+
+}
+
 document.addEventListener('input', (e) => {
     const availableInput = e.target.closest('.offers__available_search_input');
     if (availableInput) {
@@ -362,6 +470,12 @@ document.addEventListener('input', (e) => {
     if (chatsInput) {
         chatsSearchText = chatsInput.value.trim().toLowerCase();
         renderChats();
+    }
+
+    const doneInput = e.target.closest('.offers__done_search_input');
+    if (doneInput) {
+        doneSearchText = doneInput.value.trim().toLowerCase();
+        renderDone();
     }
 });
 
@@ -499,6 +613,36 @@ document.addEventListener('click', async (e) => {
     if (chatsCategoryButton && chatsCategoryButton.closest('.offers__chats')) {
         chatsSelectedCategoryId = Number(chatsCategoryButton.dataset.id);
         renderChats();
+    }
+
+    //done
+    const doneFilterTrigger = e.target.closest('.offers__done_search_sort-trigger');
+
+    if (doneFilterTrigger && doneFilterTrigger.closest('.offers__done')) {
+        const options = doneFilterTrigger.nextElementSibling;
+        options.hidden = !options.hidden;
+        return;
+    }
+
+    const doneSortButton = e.target.closest('.offers__done_search_sort-option');
+
+    if (doneSortButton && doneSortButton.closest('.offers__done')) {
+        doneSelectedSort = doneSortButton.dataset.sort;
+
+        document
+        .querySelectorAll('.offers__done .offers__search_sort-option')
+        .forEach((button) => button.classList.remove('offers__search_chip-active'));
+
+        doneSortButton.classList.add('offers__search_chip-active');
+        renderDone();
+        return;
+    }
+
+    const doneCategoryButton = e.target.closest('.offers__done_search_chip');
+
+    if (doneCategoryButton && doneCategoryButton.closest('.offers__done')) {
+        doneSelectedCategoryId = Number(doneCategoryButton.dataset.id);
+        renderDone();
     }
 
 });

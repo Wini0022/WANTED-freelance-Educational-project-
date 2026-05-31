@@ -73,16 +73,54 @@ if ($userId > 0) {
     unset($chat);
     $stmt->close();
 
+    $stmt = $mysqli->prepare("
+    SELECT
+        a.id,
+        c.id AS chat_id,
+        c.application_id,
+        c.owner_id,
+        c.executor_id,
+        c.created_at,
+        a.title,
+        a.category_id,
+        cat.name AS category_name,
+        cur.name AS currency_name,
+        a.description AS application_description,
+        a.deadline,
+        a.award,
+        a.award_desc,
+        COALESCE(msg.messages_text, '') AS messages_text
+    FROM Applications a
+    LEFT JOIN categories cat ON cat.id = a.category_id
+    LEFT JOIN currencies cur ON cur.id = a.currency_id
+    JOIN chats c ON c.application_id = a.id
+    LEFT JOIN (
+            SELECT
+                chat_id,
+                GROUP_CONCAT(body SEPARATOR ' ') AS messages_text
+            FROM chat_messages
+            GROUP BY chat_id
+    ) msg ON msg.chat_id = c.id
+    WHERE a.status = 3 AND c.executor_id = ?
+    ORDER BY a.id DESC
+");
+$stmt->bind_param('i', $userId);
+$stmt->execute();
+$done = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
+
 } else {
     // неавторизованному показываем обычный список
     $result = $mysqli->query("SELECT * FROM Applications WHERE status IN (0, 1) AND executor_id IS NULL");
     $available = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     $considered = [];
     $chats = [];
+    $done = [];
 }
 
 echo json_encode([
     'available' => $available,
     'considered' => $considered,
-    'chats' => $chats
+    'chats' => $chats,
+    'done' => $done
 ], JSON_UNESCAPED_UNICODE);

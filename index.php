@@ -120,6 +120,32 @@
         </div>
     </section>
 
+    <section class="offers offers__done<?= (!$isAuth || $isAdmin) ? ' offers__admin-hidden' : '' ?>" data-section="done">
+        <button type="button" class="offers__section_trigger">Done ✅</button>
+
+        <div class="offers__section_body">
+
+            <div class="offers__containers_searching">
+                <input class="offers__search_input offers__done_search_input" type="search" placeholder="Search offer...">
+
+                <div class="offers__searching_bottom">
+                    <div class="offers__search_sort">
+                        <button type="button" class="offers__search_sort-trigger offers__done_search_sort-trigger">Filter</button>
+
+                        <div class="offers__search_sort_options" hidden>
+                            <button type="button" class="offers__search_sort-option offers__done_search_sort-option offers__search_chip-active" data-sort="default">Default</button>
+                            <button type="button" class="offers__search_sort-option offers__done_search_sort-option" data-sort="award_desc">Award: high to low</button>
+                            <button type="button" class="offers__search_sort-option offers__done_search_sort-option" data-sort="award_asc">Award: low to high</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="offers__search_categories offers__done_search_categories"></div>
+            </div>
+
+            <div class="offers__containers offers__done_containers"></div>
+        </div>
+    </section>
+
     <section class="offers offers__available" data-section="available">
         <h2 class = "offers__available_title">All global offers </h2>
         <div class="offers__section_body">
