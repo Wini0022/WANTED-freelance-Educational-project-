@@ -71,13 +71,15 @@ $appStatus = $row['application_status'];
         <div class = "chat_area_top">
             <button type="button" id="chat-cancel">Cancel</button>
             <h3 class = "chat_name"><?=$peerName?></h3>
+            <?php if ($isAdmin): ?>
             <div class="chat_actions">
                 <button type="button" id="chat-actions-toggle">⋯</button>
                 <div id="chat-actions-menu" hidden>
                     <button type="button" class="chat-action-btn" data-action="complete">Completed!</button>
                     <button type="button" class="chat-action-btn" data-action="reject_candidate">Reject candidate</button>
                 </div>
-            </div>
+            </div> 
+            <?php endif; ?>
             <img src="../users_avatars/<?= $peerAvatar?> ">
         </div>
 

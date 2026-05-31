@@ -3,110 +3,125 @@ let availableSearchText = '';
 let availableSelectedSort = 'default';
 let availableSelectedCategoryId = 0;
 
+let allConsidered = [];
+let consideredSearchText = '';
+let consideredSelectedSort = 'default';
+let consideredSelectedCategoryId = 0;
+
+let allChats = [];
+let chatsSearchText = '';
+let chatsSelectedSort = 'default';
+let chatsSelectedCategoryId = 0;
+
 const loadOffers = () => {
   fetch('request.php')
     .then((res) => res.json())
     .then((res) => {
-      allAvailable = res.available || [];
-      renderAvailable();
+        allAvailable = res.available || [];
+        allConsidered = res.considered || [];
+        allChats = res.chats || [];
+        renderAvailable();
+        renderConsidered();
+        renderChats();
     });
 };
 
 function renderAvailable() {
-  const container = document.querySelector('.offers__available_containers');
-  if (!container) return;
+    const container = document.querySelector('.offers__available_containers');
+    if (!container) return;
+
+    const searching = document.querySelector('.offers__available .offers__containers_searching');
+
+    if (searching) {
+        searching.hidden = !allAvailable.length;
+    }
+
+    if (!allAvailable.length) {
+        container.innerHTML = "There're no available offers now.";
+        return;
+    }
 
   container.innerHTML = '';
 
-  const searched = allAvailable.filter((offer) => {
-    const text = `
-      ${offer.title || ''}
-      ${offer.description || ''}
-      ${offer.category || ''}
-      ${offer.deadline || ''}
-      ${offer.award || ''}
-      ${offer.currency || ''}
-      ${offer.award_desc || ''}
-    `.toLowerCase();
+    const searched = allAvailable.filter((offer) => {
+        return getOfferSearchText(offer).includes(availableSearchText);
+    });
 
-    return text.includes(availableSearchText);
-  });
+    const chipMap = new Map();
 
-  const chipMap = new Map();
+    for (const offer of searched) {
+        chipMap.set(Number(offer.category_id), offer.category);
+    }
 
-  for (const offer of searched) {
-    chipMap.set(Number(offer.category_id), offer.category);
-  }
+    if (availableSelectedCategoryId && !chipMap.has(availableSelectedCategoryId)) {
+        availableSelectedCategoryId = 0;
+    }
 
-  if (availableSelectedCategoryId && !chipMap.has(availableSelectedCategoryId)) {
-    availableSelectedCategoryId = 0;
-  }
+    renderAvailableCategories(chipMap);
 
-  renderAvailableCategories(chipMap);
-
-  const visible = availableSelectedCategoryId
+    const visible = availableSelectedCategoryId
     ? searched.filter((offer) => Number(offer.category_id) === availableSelectedCategoryId)
     : searched;
 
-  const sorted = [...visible];
+    const sorted = sortOffers(visible, availableSelectedSort);
 
-  if (availableSelectedSort === 'award_asc') {
-    sorted.sort((a, b) => Number(a.award) - Number(b.award));
-  }
+    if (availableSelectedSort === 'award_asc') {
+        sorted.sort((a, b) => Number(a.award) - Number(b.award));
+    }
 
-  if (availableSelectedSort === 'award_desc') {
-    sorted.sort((a, b) => Number(b.award) - Number(a.award));
-  }
+    if (availableSelectedSort === 'award_desc') {
+        sorted.sort((a, b) => Number(b.award) - Number(a.award));
+    }
 
-  if (!sorted.length) {
-    container.innerHTML = "There're no available offers now.";
-    return;
-  }
+    if (!sorted.length) {
+        container.innerHTML ="No available offers match your search.";
+        return;
+    }
 
-  for (const offer of sorted) {
-    const card = document.createElement('div');
+    for (const offer of sorted) {
+        const card = document.createElement('div');
 
-    card.innerHTML = `
-        <div>
-            <div class="offers__container_top">
-                <p class="offers__specilization">${offer.category || ''}</p>
-            </div>
-            <div class="offers__container_texts">
-                <h3 class="offers__container_title">${offer.title}</h3>
-                <div class="offers__container_texts_top">
-                    <h3 class="offers__container_award">${offer.award}</h3>
-                    <p class="offers__container_award_desc">${(offer.currency || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '')}</p>
-                    <p class="offers__container_award_desc">${offer.award_desc}</p>
+        card.innerHTML = `
+            <div>
+                <div class="offers__container_top">
+                    <p class="offers__specilization">${offer.category || ''}</p>
                 </div>
-                <p class="offers__container_desc">${offer.description}</p>
-                <button ${!IS_AUTH ? 'disabled' : ''} class="offers__container_button">Claim award</button>
+                <div class="offers__container_texts">
+                    <h3 class="offers__container_title">${offer.title}</h3>
+                    <div class="offers__container_texts_top">
+                        <h3 class="offers__container_award">${offer.award}</h3>
+                        <p class="offers__container_award_desc">${(offer.currency || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '')}</p>
+                        <p class="offers__container_award_desc">${offer.award_desc}</p>
+                    </div>
+                    <p class="offers__container_desc">${offer.description}</p>
+                    <button ${!IS_AUTH ? 'disabled' : ''} class="offers__container_button">Claim award</button>
+                </div>
             </div>
-        </div>
-    `;
+        `;
 
-    card.classList.add('offers__container');
-    card.id = offer.id;
-    container.appendChild(card);
+        card.classList.add('offers__container');
+        card.id = offer.id;
+        container.appendChild(card);
 
-    const btn = card.querySelector('.offers__container_button');
+        const btn = card.querySelector('.offers__container_button');
 
-    btn.addEventListener('click', () => {
-      const formData = new FormData();
-      formData.append('application_id', card.id);
+        btn.addEventListener('click', () => {
+        const formData = new FormData();
+        formData.append('application_id', card.id);
 
-      fetch('scary_request_system.php', {
-        method: 'POST',
-        body: formData
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.ok === true) {
-            loadOffers();
-          }
+        fetch('scary_request_system.php', {
+            method: 'POST',
+            body: formData
         })
-        .catch(console.error);
-    });
-  }
+            .then((res) => res.json())
+            .then((data) => {
+            if (data.ok === true) {
+                loadOffers();
+            }
+            })
+            .catch(console.error);
+        });
+    }
 }
 
 function renderAvailableCategories(chipMap) {
@@ -136,150 +151,403 @@ function renderAvailableCategories(chipMap) {
   }
 
 }
-/*function renderConsidered() {
-  const container = document.querySelector('.offers__considered_containers');
-  container.innerHTML = '';
+function renderConsidered() {
 
-  const searched = allConsidered.filter((offer) => {
-    const text = `
-      ${offer.title || ''}
-      ${offer.description || ''}
-      ${offer.category || ''}
-      ${offer.deadline || ''}
-      ${offer.award || ''}
-      ${offer.currency || ''}
-      ${offer.award_desc || ''}
-    `.toLowerCase();
+    const container = document.querySelector('.offers__considered_containers');
+    if (!container) return;
 
-    return text.includes(consideredSearchText);
-  });
+    const searching = document.querySelector('.offers__considered .offers__containers_searching');
 
-  if (!searched.length) {
-    container.innerHTML = "There're no considered offers now.";
-    return;
-  }
+    if (searching) {
+        searching.hidden = !allConsidered.length;
+    }
+
+    if (!allConsidered.length) {
+        container.innerHTML = "There're no considered offers now.";
+        return;
+    }
+
+    container.innerHTML = '';
+
+    const searched = allConsidered.filter((offer) => {
+        return getOfferSearchText(offer).includes(consideredSearchText);
+    });
     const chipMap = new Map();
 
     for (const offer of searched) {
-        chipMap.set(Number(offer.category_id), offer.category_name);
+        chipMap.set(Number(offer.category_id), offer.category);
     }
 
-    if (ArchivatedSelectedCategoryId && !chipMap.has(ArchivatedSelectedCategoryId)) {
-        ArchivatedSelectedCategoryId = 0;
+    if (consideredSelectedCategoryId && !chipMap.has(consideredSelectedCategoryId)) {
+        consideredSelectedCategoryId = 0;
     }
 
-    renderArchivatedCategories(chipMap);
+    renderConsideredCategories(chipMap);
 
-    const visible = ArchivatedSelectedCategoryId
-    ? searched.filter((offer) => Number(offer.category_id) === ArchivatedSelectedCategoryId)
+    const visible = consideredSelectedCategoryId
+    ? searched.filter((offer) => Number(offer.category_id) === consideredSelectedCategoryId)
     : searched;
 
-    const sorted = [...visible];
-
-    if (ArchivatedSelectedSort === 'award_asc') {
-        sorted.sort((a, b) => Number(a.award) - Number(b.award));
-    }
-
-    if (ArchivatedSelectedSort === 'award_desc') {
-        sorted.sort((a, b) => Number(b.award) - Number(a.award));
-    }
+    const sorted = sortOffers(visible, consideredSelectedSort);
 
     if (!sorted.length) {
-        container.innerHTML = 'Archive is empty.';
+        container.innerHTML = "No considered offers match your search.";
         return;
     }
-  viewConsidered(searched);
-
-/*viewConsidered = (offers_considered) =>{
-    for (let i = 0; i < offers_considered.length; i++) {
-        let cards = document.querySelector(`.offers__considered_containers`)
+    for (const offer of sorted) {
         let card = document.createElement('div')
         let html = `
             <div>
-                <div class = "offers__container_top">
-                    <p class="offers__specilization">${offers_considered[i]['category']}</p>
+                <div class ="offers__container_top">
+                    <p class="offers__specilization">${offer.category}</p>
                 </div>
                 <div class="offers__container_texts">
-                    <h3 class="offers__container_title">${offers_considered[i]['title']}</h3>
+                    <h3 class="offers__container_title">${offer.title}</h3>
                     <div class = "offers__container_texts_top">
-                        <h3 class="offers__container_award">${offers_considered[i]['award']}</h3>
-                        <p class = "offers__container_award_desc">${(offers_considered[i]['currency'] || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '')}</p>  
-                        <p class = "offers__container_award_desc">${offers_considered[i]['award_desc']}</p>
+                        <h3 class="offers__container_award">${offer.award}</h3>
+                        <p class = "offers__container_award_desc">${(offer.currency || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '')}</p>  
+                        <p class = "offers__container_award_desc">${offer.award_desc}</p>
                     </div>
-                    <p class="offers__container_desc">${offers_considered[i]['description']}</p>
+                    <p class="offers__container_desc">${offer.description}</p>
                     <p class = "offers__considered_text">Checking..</p>
                 </div>
             </div>
         `
         card.innerHTML = html
         card.classList.add('offers__container')
-        card.id = offers_considered[i]['id']
-    
-        cards.appendChild(card)
-}}*/
+        card.id = offer.id    
+        container.appendChild(card)
+    }
+}
 
-document.addEventListener('input', (e) => {
-  const input = e.target.closest('.offers__available_search_input');
-  if (!input) return;
+function renderConsideredCategories(chipMap) {
+    const box = document.querySelector('.offers__considered_search_categories');
+    if (!box) return;
 
-  availableSearchText = input.value.trim().toLowerCase();
-  renderAvailable();
-});
+    box.innerHTML = '';
 
-document.addEventListener('click', (e) => {
-  const trigger = e.target.closest('.offers__section_trigger');
-  if (trigger) {
-    const section = trigger.closest('.offers');
-    const body = section.querySelector('.offers__section_body');
+    const allBtn = document.createElement('button');
+    allBtn.type = 'button';
+    allBtn.className = consideredSelectedCategoryId === 0
+        ? 'offers__search_chip offers__considered_search_chip offers__search_chip-active'
+        : 'offers__search_chip offers__considered_search_chip';
+    allBtn.dataset.id = '0';
+    allBtn.textContent = 'All';
+    box.appendChild(allBtn);
 
-    body.hidden = !body.hidden;
-
-    if (body.hidden) {
-      localStorage.removeItem('openedOffersSection');
-    } else {
-      localStorage.setItem('openedOffersSection', section.dataset.section);
+    for (const [id, name] of chipMap) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = Number(id) === consideredSelectedCategoryId
+        ? 'offers__search_chip offers__considered_search_chip offers__search_chip-active'
+        : 'offers__search_chip offers__considered_search_chip';
+        btn.dataset.id = String(id);
+        btn.textContent = name || 'No category';
+        box.appendChild(btn);
     }
 
-    return;
+}
+
+function renderChats() {
+    const container = document.querySelector('.offers__chats_containers');
+    if (!container) return;
+
+    const searching = document.querySelector('.offers__chats .offers__containers_searching');
+
+    if (searching) {
+        searching.hidden = !allChats.length;
+    }
+
+    if (!allChats.length) {
+        container.innerHTML = "There're no chats now.";
+        return;
+    }
+
+    container.innerHTML = '';
+
+    const searched = allChats.filter((offer) => {
+        return getOfferSearchText(offer).includes(chatsSearchText);
+    });
+
+    const chipMap = new Map();
+
+    for (const offer of searched) {
+        chipMap.set(Number(offer.category_id), offer.category_name);
+    }
+
+    if (chatsSelectedCategoryId && !chipMap.has(chatsSelectedCategoryId)) {
+        chatsSelectedCategoryId = 0;
+    }
+
+    renderChatsCategories(chipMap);
+
+    const visible = chatsSelectedCategoryId
+    ? searched.filter((offer) => Number(offer.category_id) === chatsSelectedCategoryId)
+    : searched;
+
+    const sorted = sortOffers(visible, chatsSelectedSort);
+
+    for (const offer of sorted) {
+        const card = document.createElement('div');
+
+        card.innerHTML = `
+            <div>
+                <div class = "offers__container_top">
+                    <p class="offers__specilization">${offer.category_name}</p>
+                    <p class="offers__deadline">${offer.deadline}</p>
+                </div>
+                <div class="offers__container_texts">
+                    <h3 class="offers__container_title">${offer.title}</h3>
+                    <div class = "offers__container_texts_top">
+                        <h3 class="offers__container_award">${offer.award}</h3>
+                        <p class = "offers__container_award_desc">${(offer.currency_name || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '')}</p>                        
+                        <p class = "offers__container_award_desc">${offer.award_desc}</p>
+                    </div>
+                    <p class="offers__container_desc">${offer.application_description}</p>
+                    <div class = "offers__chat_buttons">
+                        <button type="button" class="open-chat offers__chats_review_button" data-chat-id="${offer.id}">Open chat</button>
+                        ${Number(offer.can_withdraw) === 1 ? `<button type="button" class="offers__withdraw offers__chats_withdraw offers__chats_review_button" data-id="${offer.application_id}">Withdraw</button>`: ''}  
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.appendChild(card);
+    }
+}
+
+function renderChatsCategories(chipMap) {
+  const box = document.querySelector('.offers__chats_search_categories');
+  if (!box) return;
+
+  box.innerHTML = '';
+
+  const allBtn = document.createElement('button');
+  allBtn.type = 'button';
+  allBtn.className = chatsSelectedCategoryId === 0
+    ? 'offers__search_chip offers__chats_search_chip offers__search_chip-active'
+    : 'offers__search_chip offers__chats_search_chip';
+  allBtn.dataset.id = '0';
+  allBtn.textContent = 'All';
+  box.appendChild(allBtn);
+
+  for (const [id, name] of chipMap) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = Number(id) === chatsSelectedCategoryId
+      ? 'offers__search_chip offers__chats_search_chip offers__search_chip-active'
+      : 'offers__search_chip offers__chats_search_chip';
+    btn.dataset.id = String(id);
+    btn.textContent = name || 'No category';
+    box.appendChild(btn);
   }
 
-  const filterTrigger = e.target.closest('.offers__available_search_sort-trigger');
+}
 
-  if (filterTrigger && filterTrigger.closest('.offers__available')) {
-    const options = filterTrigger.nextElementSibling;
-    options.hidden = !options.hidden;
-    return;
-  }
+document.addEventListener('input', (e) => {
+    const availableInput = e.target.closest('.offers__available_search_input');
+    if (availableInput) {
+        availableSearchText = availableInput.value.trim().toLowerCase();
+        renderAvailable();
+        return;
+    }
+
+    const consideredInput = e.target.closest('.offers__considered_search_input');
+    if (consideredInput) {
+        consideredSearchText = consideredInput.value.trim().toLowerCase();
+        renderConsidered();
+    }
+
+    const chatsInput = e.target.closest('.offers__chats_search_input');
+    if (chatsInput) {
+        chatsSearchText = chatsInput.value.trim().toLowerCase();
+        renderChats();
+    }
+});
+
+document.addEventListener('click', async (e) => {
+    const trigger = e.target.closest('.offers__section_trigger');
+    if (trigger) {
+        const section = trigger.closest('.offers');
+        if (section.dataset.section === 'available') return;
+
+        const body = section.querySelector('.offers__section_body');
+
+        body.hidden = !body.hidden;
+
+        if (body.hidden) {
+            localStorage.removeItem('openedOffersSection');
+        } else {
+            localStorage.setItem('openedOffersSection', section.dataset.section);
+        }
+
+        return;
+    }
+
+    const filterTrigger = e.target.closest('.offers__available_search_sort-trigger');
+
+    if (filterTrigger && filterTrigger.closest('.offers__available')) {
+        const options = filterTrigger.nextElementSibling;
+        options.hidden = !options.hidden;
+        return;
+    }
 
   const sortButton = e.target.closest('.offers__available_search_sort-option');
 
   if (sortButton && sortButton.closest('.offers__available')) {
-    availableSelectedSort = sortButton.dataset.sort;
+        availableSelectedSort = sortButton.dataset.sort;
 
-    document
-      .querySelectorAll('.offers__available .offers__search_sort-option')
-      .forEach((button) => button.classList.remove('offers__search_chip-active'));
+        document
+        .querySelectorAll('.offers__available .offers__search_sort-option')
+        .forEach((button) => button.classList.remove('offers__search_chip-active'));
 
-    sortButton.classList.add('offers__search_chip-active');
-    renderAvailable();
-    return;
-  }
+        sortButton.classList.add('offers__search_chip-active');
+        renderAvailable();
+        return;
+    }
 
-  const categoryButton = e.target.closest('.offers__available_search_chip');
+    const categoryButton = e.target.closest('.offers__available_search_chip');
 
-  if (categoryButton && categoryButton.closest('.offers__available')) {
-    availableSelectedCategoryId = Number(categoryButton.dataset.id);
-    renderAvailable();
-  }
+    if (categoryButton && categoryButton.closest('.offers__available')) {
+        availableSelectedCategoryId = Number(categoryButton.dataset.id);
+        renderAvailable();
+    }
+
+    //considered
+    const consideredFilterTrigger = e.target.closest('.offers__considered_search_sort-trigger');
+
+    if (consideredFilterTrigger && consideredFilterTrigger.closest('.offers__considered')) {
+        const options = consideredFilterTrigger.nextElementSibling;
+        options.hidden = !options.hidden;
+        return;
+    }
+
+    const consideredSortButton = e.target.closest('.offers__considered_search_sort-option');
+
+    if (consideredSortButton && consideredSortButton.closest('.offers__considered')) {
+        consideredSelectedSort = consideredSortButton.dataset.sort;
+
+        document
+        .querySelectorAll('.offers__considered .offers__search_sort-option')
+        .forEach((button) => button.classList.remove('offers__search_chip-active'));
+
+        consideredSortButton.classList.add('offers__search_chip-active');
+        renderConsidered();
+        return;
+    }
+
+    const consideredCategoryButton = e.target.closest('.offers__considered_search_chip');
+
+    if (consideredCategoryButton && consideredCategoryButton.closest('.offers__considered')) {
+        consideredSelectedCategoryId = Number(consideredCategoryButton.dataset.id);
+        renderConsidered();
+    }
+
+    //chat
+    const btn = e.target.closest('.open-chat');
+    if (btn){
+        window.location.href = `nothing-to-watch-here/chat_room.php?chat_id=${btn.dataset.chatId}`;
+        return
+    }
+
+    const withdrawButton = e.target.closest('.offers__chats_withdraw');
+    if (withdrawButton) {
+        const fd = new FormData();
+        fd.append('application_id', withdrawButton.dataset.id);
+
+        const res = await fetch('withdraw_work.php', {
+            method: 'POST',
+            body: fd
+        });
+
+        const data = await res.json();
+
+        if (data.ok) {
+            loadOffers();
+        } else {
+            alert(data.error || 'Withdraw failed');
+        }
+
+        return;
+    }
+
+
+    const chatsFilterTrigger = e.target.closest('.offers__chats_search_sort-trigger');
+
+    if (chatsFilterTrigger && chatsFilterTrigger.closest('.offers__chats')) {
+        const options = chatsFilterTrigger.nextElementSibling;
+        options.hidden = !options.hidden;
+        return;
+    }
+
+    const chatsSortButton = e.target.closest('.offers__chats_search_sort-option');
+
+    if (chatsSortButton && chatsSortButton.closest('.offers__chats')) {
+        chatsSelectedSort = chatsSortButton.dataset.sort;
+
+        document
+        .querySelectorAll('.offers__chats .offers__search_sort-option')
+        .forEach((button) => button.classList.remove('offers__search_chip-active'));
+
+        chatsSortButton.classList.add('offers__search_chip-active');
+        renderChats();
+        return;
+    }
+
+    const chatsCategoryButton = e.target.closest('.offers__chats_search_chip');
+
+    if (chatsCategoryButton && chatsCategoryButton.closest('.offers__chats')) {
+        chatsSelectedCategoryId = Number(chatsCategoryButton.dataset.id);
+        renderChats();
+    }
+
 });
 
 const openedSection = localStorage.getItem('openedOffersSection');
 
 document.querySelectorAll('.offers').forEach((section) => {
-  const body = section.querySelector('.offers__section_body');
-  if (!body) return;
+    const body = section.querySelector('.offers__section_body');
+    if (!body) return;
 
-  body.hidden = section.dataset.section !== openedSection;
+    if (section.classList.contains('offers__admin-hidden')) {
+        section.classList.add('offers__section-admin-hidden');
+        section.hidden = true;
+        return;
+    }
+
+    if (section.dataset.section === 'available') {
+        section.classList.add('offers__section-always-open');
+        body.hidden = false;
+        return;
+    }
+
+    body.hidden = section.dataset.section !== openedSection;
 });
 
+function getOfferSearchText(offer) {
+    return `
+        ${offer.title || ''}
+        ${offer.description || offer.application_description || ''}
+        ${offer.category || offer.category_name || ''}
+        ${offer.deadline || ''}
+        ${offer.award || ''}
+        ${offer.currency || offer.currency_name || ''}
+        ${offer.award_desc || ''}
+        ${offer.messages_text || ''}
+    `.toLowerCase();
+}
+
+function sortOffers(offers, sortType) {
+    const sorted = [...offers];
+
+    if (sortType === 'award_asc') {
+        sorted.sort((a, b) => Number(a.award) - Number(b.award));
+    }
+
+    if (sortType === 'award_desc') {
+        sorted.sort((a, b) => Number(b.award) - Number(a.award));
+    }
+
+    return sorted;
+}
 loadOffers();

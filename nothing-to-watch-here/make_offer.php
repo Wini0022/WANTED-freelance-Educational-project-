@@ -47,6 +47,8 @@ if (
 
 $award = (float)$awardRaw;
 
+$ownerId = (int)$_SESSION['user_id'];
+
 if ($categoryNew !== '') {
     $stmt = $mysqli->prepare('SELECT id FROM categories WHERE LOWER(name) = LOWER(?) LIMIT 1');
     $stmt->bind_param('s', $categoryNew);
@@ -67,20 +69,21 @@ if ($categoryNew !== '') {
 
 $stmt = $mysqli->prepare('
     INSERT INTO Applications
-        (title, category_id, deadline, award, currency_id, award_desc, description, status)
+        (title, category_id, deadline, award, currency_id, award_desc, description, owner_id, status)
     VALUES
-        (?, ?, ?, ?, ?, ?, ?, 0)
+        (?, ?, ?, ?, ?, ?, ?, ?, 0)
 ');
 
 $stmt->bind_param(
-    'sisdiss',
+    'sisdissi',
     $title,
     $categoryId,
     $deadline,
     $award,
     $currencyId,
     $awardDesc,
-    $description
+    $description,
+    $ownerId
 );
 
 $ok = $stmt->execute();

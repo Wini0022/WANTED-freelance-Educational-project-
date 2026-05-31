@@ -12,6 +12,7 @@
     <?php
         require_once './auth_bootstep.php'; // одна . показывает что это в этой же папке
         $isAuth = isset($_SESSION['user_id']);
+        $isAdmin = $isAuth && (int)($_SESSION['user_role'] ?? 0) === 1;
         $error = $_SESSION['auth_error'] ?? null;
         echo($error);
         unset($_SESSION['auth_error']); //unset удалить
@@ -67,7 +68,7 @@
         <button class = "freelance__button">Find your award</button>
         <?php endif ?>
     </header>
-    <section class="offers offers__considered" data-section="considered">
+    <section class="offers offers__considered<?= (!$isAuth || $isAdmin) ? ' offers__admin-hidden' : '' ?>" data-section="considered">
         <button type="button" class="offers__section_trigger">Being considered 👀</button>
 
         <div class="offers__section_body">
@@ -93,8 +94,34 @@
         </div>
     </section>
 
+    <section class="offers offers__chats<?= (!$isAuth || $isAdmin) ? ' offers__admin-hidden' : '' ?>" data-section="chats">
+        <button type="button" class="offers__section_trigger">Active work & Chats 💼</button>
+
+        <div class="offers__section_body">
+
+            <div class="offers__containers_searching">
+                <input class="offers__search_input offers__chats_search_input" type="search" placeholder="Search offer...">
+
+                <div class="offers__searching_bottom">
+                    <div class="offers__search_sort">
+                        <button type="button" class="offers__search_sort-trigger offers__chats_search_sort-trigger">Filter</button>
+
+                        <div class="offers__search_sort_options" hidden>
+                            <button type="button" class="offers__search_sort-option offers__chats_search_sort-option offers__search_chip-active" data-sort="default">Default</button>
+                            <button type="button" class="offers__search_sort-option offers__chats_search_sort-option" data-sort="award_desc">Award: high to low</button>
+                            <button type="button" class="offers__search_sort-option offers__chats_search_sort-option" data-sort="award_asc">Award: low to high</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="offers__search_categories offers__chats_search_categories"></div>
+            </div>
+
+            <div class="offers__containers offers__chats_containers"></div>
+        </div>
+    </section>
+
     <section class="offers offers__available" data-section="available">
-        <button type="button" class="offers__section_trigger">Available offers 🌍</button>
+        <h2 class = "offers__available_title">All global offers </h2>
         <div class="offers__section_body">
 
             <div class="offers__containers_searching">

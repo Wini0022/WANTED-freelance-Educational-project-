@@ -29,14 +29,60 @@ if ($userId > 0) {
     $stmt->execute();
     $considered = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
+
+    $stmt = $mysqli->prepare("
+        SELECT
+            c.id,
+            c.application_id,
+            c.owner_id,
+            c.executor_id,
+            c.created_at,
+            a.title,
+            a.category_id,
+            cat.name AS category_name,
+            cur.name AS currency_name,
+            a.description AS application_description,
+            a.deadline,
+            a.award,
+            a.award_desc,
+            COALESCE(msg.messages_text, '') AS messages_text
+        FROM chats c
+        JOIN Applications a ON a.id = c.application_id
+        LEFT JOIN categories cat ON cat.id = a.category_id
+        LEFT JOIN currencies cur ON cur.id = a.currency_id
+        LEFT JOIN (
+            SELECT
+                chat_id,
+                GROUP_CONCAT(body SEPARATOR ' ') AS messages_text
+            FROM chat_messages
+            GROUP BY chat_id
+        ) msg ON msg.chat_id = c.id
+        WHERE a.status = 2 AND (? = 1 OR c.owner_id = ? OR c.executor_id = ?)
+        ORDER BY c.id DESC
+    ");
+    $isAdmin = ((int)($_SESSION['user_role'] ?? 0) === 1);
+    $isAdminInt = $isAdmin ? 1 : 0;
+
+    $stmt->bind_param('iii', $isAdminInt, $userId, $userId);
+    $stmt->execute();
+    $chats = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    foreach ($chats as &$chat) {
+        $chat['can_withdraw'] = ((int)$chat['executor_id'] === $userId) ? 1 : 0;
+        $chat['current_user_id'] = $userId;
+    }
+    unset($chat);
+    $stmt->close();
+
 } else {
     // неавторизованному показываем обычный список
     $result = $mysqli->query("SELECT * FROM Applications WHERE status IN (0, 1) AND executor_id IS NULL");
     $available = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     $considered = [];
+    $chats = [];
 }
 
 echo json_encode([
     'available' => $available,
-    'considered' => $considered
+    'considered' => $considered,
+    'chats' => $chats
 ], JSON_UNESCAPED_UNICODE);
