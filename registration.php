@@ -20,7 +20,7 @@ if ($expRaw === '' || !ctype_digit($expRaw)) { //ctype_digit цифры
 
 $experience_months = (int)$expRaw;
 
-if ($experience_months > 1200) { // защитный потолок
+if ($experience_months > 600) { // защитный потолок
     $_SESSION['auth_error'] = 'You lie man';
     header('Location: index.php');
     exit;
@@ -102,8 +102,8 @@ $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 $stmt = $mysqli->prepare('INSERT INTO users (name, nickname, avatar, user_desc, country, experience_months, password_hash) VALUES (?, ?, ?, ?, ?, ?, ?)');
 $stmt->bind_param('sssssis', $name, $nickname, $avatarFileName, $user_desc, $country, $experience_months, $passwordHash);
 $ok = $stmt->execute();
+$newUserId = $stmt->insert_id;
 $stmt->close();
-
 
 if (!$ok) {
     $_SESSION['auth_error'] = 'Registration failed. Something went wrong.';
@@ -111,6 +111,17 @@ if (!$ok) {
     exit;
 }
 
+$_SESSION['user_id'] = $newUserId;
+$_SESSION['user_role'] = 0;
+$_SESSION['nickname'] = $nickname;
+$_SESSION['country'] = $country;
+$_SESSION['name'] = $name;
+$_SESSION['user_desc'] = $user_desc;
+$_SESSION['AvatarFileName'] = $avatarFileName;
+$_SESSION['exp_years'] = intdiv($experience_months, 12);
+$_SESSION['exp_months'] = $experience_months % 12;
+
+$_SESSION['auth_success'] = true;
 
 header('Location: index.php');
 exit;

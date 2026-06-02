@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="../style.css">
 </head>
 <body>
+    <a href="../logout.php">Выйти</a>
     <h2 class="admin__title">Welcome to admin panel, <?= $_SESSION['name']?>! 👑</h2>
     <div class="admin__panel">
 
@@ -27,7 +28,7 @@
 
                     <div class = "admin__search_sort">
                         <button type="button" class="admin__search_sort-trigger">Filter</button>
-                        <div class = "admin__search_sort_options" hidden>
+                        <div class = "admin__search_sort_options">
                             <button type="button" class="admin__search_sort-option admin__search_chip-active" data-sort="default">Default</button>
                             <button type="button" class="admin__search_sort-option" data-sort="award_desc">Award: high to low</button>
                             <button type="button" class="admin__search_sort-option" data-sort="award_asc">Award: low to high</button>
@@ -52,7 +53,7 @@
                 <div class="admin__searching_bottom">
                     <div class="admin__search_sort">
                         <button type="button" class="admin__search_sort-trigger admin__response_search_sort-trigger">Filter</button>
-                        <div class="admin__search_sort_options" hidden>
+                        <div class="admin__search_sort_options">
                             <button type="button" class="admin__search_sort-option admin__response_search_sort-option admin__search_chip-active" data-sort="default" >Default</button>
                             <button type="button" class="admin__search_sort-option admin__response_search_sort-option" data-sort="award_desc">Award: high to low</button>
                             <button type="button" class="admin__search_sort-option admin__response_search_sort-option" data-sort="award_asc">Award: low to high</button>
@@ -81,7 +82,7 @@
                 <div class="admin__searching_bottom">
                     <div class="admin__search_sort">
                         <button type="button" class="admin__search_sort-trigger admin__chats_search_sort-trigger">Filter</button>
-                        <div class="admin__search_sort_options" hidden>
+                        <div class="admin__search_sort_options">
                             <button type="button" class="admin__search_sort-option admin__chats_search_sort-option admin__search_chip-active" data-sort="default" >Default</button>
                             <button type="button" class="admin__search_sort-option admin__chats_search_sort-option" data-sort="award_desc">Award: high to low</button>
                             <button type="button" class="admin__search_sort-option admin__chats_search_sort-option" data-sort="award_asc">Award: low to high</button>
@@ -108,7 +109,7 @@
                 <div class="admin__searching_bottom">
                     <div class="admin__search_sort">
                         <button type="button" class="admin__search_sort-trigger admin__done_search_sort-trigger">Filter</button>
-                        <div class="admin__search_sort_options" hidden>
+                        <div class="admin__search_sort_options">
                             <button type="button" class="admin__search_sort-option admin__done_search_sort-option admin__search_chip-active" data-sort="default" >Default</button>
                             <button type="button" class="admin__search_sort-option admin__done_search_sort-option" data-sort="award_desc">Award: high to low</button>
                             <button type="button" class="admin__search_sort-option admin__done_search_sort-option" data-sort="award_asc">Award: low to high</button>
@@ -136,7 +137,7 @@
                 <div class="admin__searching_bottom">
                     <div class="admin__search_sort">
                         <button type="button" class="admin__search_sort-trigger admin__archivated_search_sort-trigger">Filter</button>
-                        <div class="admin__search_sort_options" hidden>
+                        <div class="admin__search_sort_options">
                             <button type="button" class="admin__search_sort-option admin__archivated_search_sort-option admin__search_chip-active" data-sort="default" >Default</button>
                             <button type="button" class="admin__search_sort-option admin__archivated_search_sort-option" data-sort="award_desc">Award: high to low</button>
                             <button type="button" class="admin__search_sort-option admin__archivated_search_sort-option" data-sort="award_asc">Award: low to high</button>

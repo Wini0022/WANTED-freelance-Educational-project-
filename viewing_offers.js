@@ -90,8 +90,9 @@ function renderAvailable() {
 
         card.innerHTML = `
             <div>
-                <div class="offers__container_top">
-                    <p class="offers__specilization">${offer.category || ''}</p>
+                <div class = "offers__container_top">
+                    <p class="offers__specilization">${offer.category}</p>
+                    <p class="offers__deadline">${offer.deadline}</p>
                 </div>
                 <div class="offers__container_texts">
                     <h3 class="offers__container_title">${offer.title}</h3>
@@ -502,7 +503,7 @@ document.addEventListener('click', async (e) => {
 
     if (filterTrigger && filterTrigger.closest('.offers__available')) {
         const options = filterTrigger.nextElementSibling;
-        options.hidden = !options.hidden;
+        options.classList.toggle('offers__search_sort_options-open');
         return;
     }
 
@@ -532,7 +533,7 @@ document.addEventListener('click', async (e) => {
 
     if (consideredFilterTrigger && consideredFilterTrigger.closest('.offers__considered')) {
         const options = consideredFilterTrigger.nextElementSibling;
-        options.hidden = !options.hidden;
+        options.classList.toggle('offers__search_sort_options-open');
         return;
     }
 
@@ -590,7 +591,7 @@ document.addEventListener('click', async (e) => {
 
     if (chatsFilterTrigger && chatsFilterTrigger.closest('.offers__chats')) {
         const options = chatsFilterTrigger.nextElementSibling;
-        options.hidden = !options.hidden;
+        options.classList.toggle('offers__search_sort_options-open');
         return;
     }
 
@@ -620,7 +621,7 @@ document.addEventListener('click', async (e) => {
 
     if (doneFilterTrigger && doneFilterTrigger.closest('.offers__done')) {
         const options = doneFilterTrigger.nextElementSibling;
-        options.hidden = !options.hidden;
+        options.classList.toggle('offers__search_sort_options-open');
         return;
     }
 

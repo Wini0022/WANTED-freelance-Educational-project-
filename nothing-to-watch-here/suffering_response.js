@@ -174,7 +174,7 @@ document.addEventListener('click', async(e) =>{
     const filterTrigger = e.target.closest('.admin__response_search_sort-trigger');
     if (filterTrigger && filterTrigger.closest('.admin__panel_section-responses')) {
         const divSearchOptions = filterTrigger.nextElementSibling;
-        divSearchOptions.hidden = !divSearchOptions.hidden;
+        divSearchOptions.classList.toggle('admin__search_sort_options-open');
         return;
     }
 

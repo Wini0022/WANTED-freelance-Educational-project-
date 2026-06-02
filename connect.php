@@ -21,4 +21,20 @@
     exit();
   }
 
-  
+if (isset($_SESSION['user_id'])) {
+    $userId = (int)$_SESSION['user_id'];
+
+    $stmt = $mysqli->prepare('SELECT id FROM users WHERE id = ? LIMIT 1');
+    $stmt->bind_param('i', $userId);
+    $stmt->execute();
+    $exists = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if (!$exists) {
+        $_SESSION = [];
+        session_destroy();
+
+        header('Location: index.php');
+        exit;
+    }
+}

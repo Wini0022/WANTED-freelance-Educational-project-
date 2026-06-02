@@ -111,7 +111,13 @@ $stmt->close();
 
 } else {
     // неавторизованному показываем обычный список
-    $result = $mysqli->query("SELECT * FROM Applications WHERE status IN (0, 1) AND executor_id IS NULL");
+    $result = $mysqli->query("    
+    SELECT a.*, c.name AS category, cu.name AS currency
+    FROM Applications a
+    LEFT JOIN categories c ON c.id = a.category_id
+    LEFT JOIN currencies cu ON cu.id = a.currency_id
+    WHERE a.status IN (0, 1) AND a.executor_id IS NULL
+    ");
     $available = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     $considered = [];
     $chats = [];

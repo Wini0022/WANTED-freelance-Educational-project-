@@ -185,7 +185,7 @@ document.addEventListener('click', async (e) => {
 
   if (filterTrigger && filterTrigger.closest('.admin__panel_section-done')) {
     const divSearchOptions = filterTrigger.nextElementSibling;
-    divSearchOptions.hidden = !divSearchOptions.hidden;
+    divSearchOptions.classList.toggle('admin__search_sort_options-open');
     return;
   }
 
