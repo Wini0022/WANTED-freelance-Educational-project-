@@ -44,7 +44,7 @@ $experienceMonths = max(0, (int)($user['experience_months'] ?? 0));
 $_SESSION['exp_years'] = intdiv($experienceMonths, 12); //intdiv - целочисленное деление без дроби
 $_SESSION['exp_months'] = $experienceMonths % 12;
 
-
+$_SESSION['login_success'] = true;
 
 header('Location: index.php');
 exit;

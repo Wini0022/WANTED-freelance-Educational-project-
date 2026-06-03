@@ -3,6 +3,16 @@ let chatsSearchText = '';
 let chatsSelectedSort = 'default';
 let chatsSelectedCategoryId = 0;
 
+function formatAward(award) {
+  const number = Number(award);
+
+  if (!Number.isFinite(number)) {
+    return award || '0';
+  }
+
+  return number.toLocaleString('en-US');
+}
+
 (async () =>{
 
 const res = await fetch('chat_list.php');
@@ -80,7 +90,7 @@ function renderChats(chats){
           <div class="offers__container_texts">
               <h3 class="offers__container_title">${chat.title}</h3>
               <div class = "offers__container_texts_top">
-                  <h3 class="offers__container_award">${chat.award}</h3>
+                  <h3 class="offers__container_award">${formatAward(chat.award)}</h3>
                   <p class = "offers__container_award_desc">${(chat.currency_name || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '')}</p>                        
                   <p class = "offers__container_award_desc">${chat.award_desc}</p>
               </div>

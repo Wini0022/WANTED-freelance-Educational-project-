@@ -15,6 +15,9 @@
         $authSuccess = $_SESSION['auth_success'] ?? false;
         unset($_SESSION['auth_success']);
 
+        $loginSuccess = $_SESSION['login_success'] ?? false;
+        unset($_SESSION['login_success']);
+
         $isAuth = isset($_SESSION['user_id']);
         $isAdmin = $isAuth && (int)($_SESSION['user_role'] ?? 0) === 1;
         $error = $_SESSION['auth_error'] ?? null;
@@ -213,6 +216,7 @@
     <script>
         window.IS_AUTH = <?= $isAuth ? 'true' : 'false' ?>;
         window.AUTH_SUCCESS = <?= $authSuccess ? 'true' : 'false' ?>;
+        window.LOGIN_SUCCESS = <?= $loginSuccess ? 'true' : 'false' ?>;
     </script>
     <script src = "viewing_offers.js"></script>
     <script src = "script.js" ></script>

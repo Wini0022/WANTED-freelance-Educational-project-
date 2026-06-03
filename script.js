@@ -177,7 +177,7 @@ if (expInput) {
     });
 }
 
-if (window.AUTH_SUCCESS) {
+if (window.AUTH_SUCCESS || window.LOGIN_SUCCESS) {
     runConfetti();
 }
 
@@ -186,13 +186,23 @@ function runConfetti() {
     root.className = 'confetti';
     document.body.append(root);
 
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 42; i++) {
         const piece = document.createElement('span');
         piece.style.left = `${Math.random() * 100}%`;
-        piece.style.animationDelay = `${Math.random() * 1}s`;
-        piece.style.backgroundColor = ['#FF4800', '#FFB19F', '#111111', '#FFFFFF', '#49a373'][i % 4];
+        piece.style.animationDelay = `${Math.random() * 0.6}s`;
+        piece.style.backgroundColor = ['#FF4800', '#FFB19F', '#111111', '#FFFFFF', '#49a373'][i % 5];
         root.append(piece);
     }
 
-    setTimeout(() => root.remove(), 1800);
+    setTimeout(() => root.remove(), 1000);
+}
+
+function formatAward(award) {
+    const number = Number(award);
+
+    if (!Number.isFinite(number)) {
+        return award || '0';
+    }
+
+    return number.toLocaleString('en-US');
 }
