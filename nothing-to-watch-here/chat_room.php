@@ -62,14 +62,16 @@ $appStatus = $row['application_status'];
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Chat with <?=$peerName?></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with <?=$peerName?></title>
+    <link rel="stylesheet" href="../style.css">
 </head>
-<body>
+<body class="chat-page">
     <section class = "chat_area">
 
         <div class = "chat_area_top">
-            <button type="button" id="chat-cancel">Cancel</button>
+            <button class = "chat__close_button" type="button" id="chat-cancel"><img class = "chat__leave_button" src = "../images/chat__leave-button.svg"></button>
             <h3 class = "chat_name"><?=$peerName?></h3>
             <?php if ($isAdmin): ?>
             <div class="chat_actions">
@@ -80,16 +82,16 @@ $appStatus = $row['application_status'];
                 </div>
             </div> 
             <?php endif; ?>
-            <img src="../users_avatars/<?= $peerAvatar?> ">
+            <img class = "chat__avatar" src="../users_avatars/<?= $peerAvatar?> ">
         </div>
 
         <div id="messages"></div>
 
         <form id="send-form">
             <input id="body" name="body" type="text" autocomplete="off" required placeholder="Write a message...">
-            <button type="submit">Send</button>
+            <button type="submit"><img class = "submit__image" src = "../images/chat_send_image.svg"></button>
         </form>
-    <section>
+    </section>
 
 
 <script>
@@ -99,24 +101,82 @@ const form = document.getElementById('send-form');
 const bodyInput = document.getElementById('body');
 const currentUserId  = <?= (int)$userId ?>;
 
+function syncSendButton() {
+  const hasText = bodyInput.value.trim().length > 0;
+  form.classList.toggle('send-form-active', hasText);
+}
+
+bodyInput.addEventListener('input', syncSendButton);
+syncSendButton();
+
 const appStatus = <?= $appStatus ?>;
 if (appStatus === 3) {
   form.style.display = 'none'; 
 }
 
+let lastMessageId = 0;
+let lastDateKey = null;
+
+function shortUrl(url) {
+  const maxLength = 35;
+
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace(/^www\./, '');
+    const path = parsed.pathname === '/' ? '' : parsed.pathname;
+    const visible = `${host}${path}`;
+
+    return visible.length > maxLength
+      ? visible.slice(0, maxLength) + '...'
+      : visible;
+  } catch {
+    return url.length > maxLength
+      ? url.slice(0, maxLength) + '...'
+      : url;
+  }
+}
+
+function appendMessageText(container, text) {
+  const value = String(text ?? '');
+  const urlRegex = /https?:\/\/[^\s]+/g;
+  let lastIndex = 0;
+
+  for (const match of value.matchAll(urlRegex)) {
+    const url = match[0];
+    const index = match.index;
+
+    if (index > lastIndex) {
+      container.appendChild(
+        document.createTextNode(value.slice(lastIndex, index))
+      );
+    }
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.textContent = shortUrl(url);
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+
+    container.appendChild(link);
+
+    lastIndex = index + url.length;
+  }
+
+  if (lastIndex < value.length) {
+    container.appendChild(
+      document.createTextNode(value.slice(lastIndex))
+    );
+  }
+}
+
 async function loadMessages() {
-  const res = await fetch(`chat_messages.php?chat_id=${encodeURIComponent(chatId)}`); 
+  const res = await fetch(`chat_messages.php?chat_id=${encodeURIComponent(chatId)}&after_id=${lastMessageId}`);
   const data = await res.json();
 
   if (!data.ok) return;
-  messagesEl.innerHTML = '';
-
-  let lastDateKey = null;
 
   for (const m of data.messages) {
     const isMine = Number(m.sender_id) === currentUserId;
-    const isAdminSender = Number(m.sender_role) === 1;
-    const isBlue = isMine || isAdminSender;
 
     const d = new Date(m.created_at.replace(' ', 'T')); // "2026-05-03 16:01:34" -> 2026-05-03T16:01:34 (стабильнее)
     const hh = String(d.getHours()).padStart(2, '0'); // padStart дополняет слева нулем до длины 2
@@ -143,21 +203,41 @@ async function loadMessages() {
     }
 
     const div = document.createElement('div');
-    const peerIcon = m.is_read_by_peer ? 'message-checked-icon.svg' : 'message-nonchecked-icon.svg'
-
-    div.innerHTML = `
-    <p class = "message_text" >${m.body}</p>
-    <div class = "message_bottom">
-        ${isMine ? `<img class="message_peer_icon" src="../images/${peerIcon}">` : ''}
-        <span class="message_time">${time}</span>
-    </div>
-
-    `;
-
     div.classList.add('message');
-    div.style.background = isBlue ? '#E6FDFF' : '#fff';
 
-    messagesEl.appendChild(div);
+    if (isMine) {
+        div.classList.add('sender');
+    }
+
+    const peerIcon = m.is_read_by_peer
+    ? 'message-checked-icon.svg'
+    : 'message-nonchecked-icon.svg';
+
+    const messageText = document.createElement('p');
+    messageText.classList.add('message_text');
+    appendMessageText(messageText, m.body);
+
+    const messageBottom = document.createElement('div');
+    messageBottom.classList.add('message_bottom');
+
+    const timeSpan = document.createElement('span');
+    timeSpan.classList.add('message_time');
+    timeSpan.textContent = time;
+
+    messageBottom.appendChild(timeSpan);
+
+    if (isMine) {
+        const icon = document.createElement('img');
+        icon.classList.add('message_peer_icon');
+        icon.src = `../images/${peerIcon}`;
+        messageBottom.appendChild(icon);
+        }
+
+        div.appendChild(messageText);
+        div.appendChild(messageBottom);
+
+        messagesEl.appendChild(div);
+        lastMessageId = Number(m.id);
   }
 }
 
@@ -170,6 +250,7 @@ form.addEventListener('submit', async (e) => {
   const data = await res.json();
   if (data.ok) {
     bodyInput.value = '';
+    syncSendButton();
     await loadMessages();
   }
 });
@@ -183,9 +264,11 @@ document.getElementById('chat-cancel').addEventListener('click', () => {
 const toggleBtn = document.getElementById('chat-actions-toggle');
 const menu = document.getElementById('chat-actions-menu');
 
-toggleBtn.addEventListener('click', () => {
-  menu.hidden = !menu.hidden; 
-});
+if (toggleBtn && menu) {
+  toggleBtn.addEventListener('click', () => {
+    menu.hidden = !menu.hidden;
+  });
+}
 
 const applicationId = <?= $applicationId ?>;
 
@@ -209,6 +292,7 @@ document.addEventListener('click', async (e)=>{
     window.location.href = <?= json_encode($cancelHref) ?>;
 
 })
+
 </script>
 </body>
 </html>

@@ -5,6 +5,10 @@ let searchText = '';
 let selectedSort = 'default';
 let selectedCategoryId = 0;
 
+function adminEmpty(text) {
+  return `<p class="admin__empty">${text}</p>`;
+}
+
 const loadOffers = () => {
   fetch('super_request.php')
     .then((res) => res.json())
@@ -79,7 +83,7 @@ function renderWithout() {
   }
 
   if (sortedOffers.length > 0) viewCard(sortedOffers, allCategories, allCurrencies);
-  else container.innerHTML = 'Nothing found.';
+  else container.innerHTML = adminEmpty('Nothing found.');
 }
 
 function renderSearchCategories(chipMap) {
@@ -239,3 +243,13 @@ document.addEventListener('input', (e) => {
     .then(d => { if (d.ok) loadOffers(); else console.log(d.error); })
     .catch(console.error);
 });
+
+function categoryBadge(categoryId, categoryName) {
+    const colorId = Number(categoryId) % 6;
+
+    return `
+        <p class="offers__specilization offers__specilization-${colorId}">
+            ${categoryName || 'No category'}
+        </p>
+    `;
+}

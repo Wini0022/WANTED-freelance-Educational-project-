@@ -206,3 +206,18 @@ function formatAward(award) {
 
     return number.toLocaleString('en-US');
 }
+
+function categoryColorClass(categoryId) {
+    const colorId = Number(categoryId) % 6;
+    return `offers__specilization-${Number.isFinite(colorId) ? colorId : 0}`;
+}
+
+function categoryBadge(categoryId, categoryName) {
+    const colorId = Number(categoryId) % 6;
+
+    return `
+        <p class="offers__specilization offers__specilization-${colorId}">
+            ${categoryName || 'No category'}
+        </p>
+    `;
+}

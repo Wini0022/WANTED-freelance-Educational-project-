@@ -3,6 +3,20 @@ let responseSearchText = '';
 let responseSelectedSort = 'default';
 let responseSelectedCategoryId = 0;
 
+function formatAward(award) {
+    const number = Number(award);
+
+    if (!Number.isFinite(number)) {
+        return award || '0';
+    }
+
+    return number.toLocaleString('en-US');
+}
+
+function currencySymbol(currency) {
+    return (currency || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '');
+}
+
 fetch('super_request.php')
   .then((res) => res.json())
   .then((res) => {
@@ -64,7 +78,7 @@ function renderResponses() {
     }
 
     if (groups.length > 0) viewResponseCard(groups);
-    else container.innerHTML = "There're no offers with responses.";
+    else container.innerHTML = adminEmpty("There're no offers with responses.");
 }
 
 function renderResponseCategories(chipMap) {
@@ -124,14 +138,14 @@ viewResponseCard = (groups) => {
     let html = `
                 <div class = "admin__container_info">
                     <div class = "admin__container_top">
-                        <p class="admin__specilization">${app.category_name}</p>
+                        ${categoryBadge(app.category_id, app.category_name)}
                     </div>
                     <div class="admin__container_texts">
                         <p class="admin__container_deadline">${app.deadline}</p>
                         <h3 class="admin__container_title">${app.title}</h3>
                         <div class = "admin__container_texts_top">
-                            <h3 class="admin__container_award">${app.award}</h3>
-                            <p class = "admin__container_award_currency">${app.currency_name.replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '') || '—'}</p>
+                            <h3 class="admin__container_award">${formatAward(app.award)}</h3>
+                            <p class = "admin__container_award_currency">${currencySymbol(app.currency_name) || '—'}</p>
                             <p class = "admin__container_award_desc">${app.award_desc}</p>
                         </div>
                         <p class="admin__container_desc">${app.description}</p>

@@ -17,6 +17,7 @@ if ($userId > 0) {
     $stmt = $mysqli->prepare("
     SELECT DISTINCT
         a.*,
+        r.id AS request_id,
         c.name AS category,
         cu.name AS currency
     FROM Applications a

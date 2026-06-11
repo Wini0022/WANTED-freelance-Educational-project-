@@ -18,6 +18,14 @@ let doneSearchText = '';
 let doneSelectedSort = 'default';
 let doneSelectedCategoryId = 0;
 
+function offerEmpty(text) {
+    return `<p class="offers__empty">${text}</p>`;
+}
+
+function currencySymbol(currency) {
+    return (currency || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '');
+}
+
 const loadOffers = () => {
   fetch('request.php')
     .then((res) => res.json())
@@ -44,7 +52,7 @@ function renderAvailable() {
     }
 
     if (!allAvailable.length) {
-        container.innerHTML = "There're no available offers now.";
+        container.innerHTML = offerEmpty("There're no available offers now.");
         return;
     }
 
@@ -81,7 +89,7 @@ function renderAvailable() {
     }
 
     if (!sorted.length) {
-        container.innerHTML ="No available offers match your search.";
+        container.innerHTML = offerEmpty('No available offers match your search.');
         return;
     }
 
@@ -90,14 +98,14 @@ function renderAvailable() {
 
         card.innerHTML = `
             <div class = "offers__container_top">
-                <p class="offers__specilization">${offer.category}</p>
+                ${categoryBadge(offer.category_id, offer.category)}
                 <p class="offers__deadline">${offer.deadline}</p>
             </div>
             <div class="offers__container_texts">
                 <h3 class="offers__container_title">${offer.title}</h3>
                 <div class="offers__container_texts_top">
                     <h3 class="offers__container_award">${formatAward(offer.award)}</h3>
-                    <p class="offers__container_award_desc">${(offer.currency || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '')}</p>
+                    <p class="offers__container_award_desc">${currencySymbol(offer.currency)}</p>
                     <p class="offers__container_award_desc">${offer.award_desc}</p>
                 </div>
                 <p class="offers__container_desc">${offer.description}</p>
@@ -149,7 +157,7 @@ function renderAvailableCategories(chipMap) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = Number(id) === availableSelectedCategoryId
-      ? 'offers__search_chip offers__available_search_chip offers__search_chip-active'
+      ? `offers__search_chip offers__available_search_chip offers__search_chip-active ${categoryColorClass(id)}`
       : 'offers__search_chip offers__available_search_chip';
     btn.dataset.id = String(id);
     btn.textContent = name || 'No category';
@@ -169,7 +177,7 @@ function renderConsidered() {
     }
 
     if (!allConsidered.length) {
-        container.innerHTML = "There're no considered offers now.";
+        container.innerHTML = offerEmpty("There're no considered offers now.");
         return;
     }
 
@@ -197,24 +205,28 @@ function renderConsidered() {
     const sorted = sortOffers(visible, consideredSelectedSort);
 
     if (!sorted.length) {
-        container.innerHTML = "No considered offers match your search.";
+        container.innerHTML = offerEmpty('No considered offers match your search.');
         return;
     }
     for (const offer of sorted) {
         let card = document.createElement('div')
         let html = `
                 <div class ="offers__container_top">
-                    <p class="offers__specilization">${offer.category}</p>
+                    ${categoryBadge(offer.category_id, offer.category)}
+                    <p class="offers__deadline">${offer.deadline}</p>
                 </div>
                 <div class="offers__container_texts">
                     <h3 class="offers__container_title">${offer.title}</h3>
                     <div class = "offers__container_texts_top">
                         <h3 class="offers__container_award">${formatAward(offer.award)}</h3>
-                        <p class = "offers__container_award_desc">${(offer.currency || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '')}</p>  
+                        <p class = "offers__container_award_desc">${currencySymbol(offer.currency)}</p>  
                         <p class = "offers__container_award_desc">${offer.award_desc}</p>
                     </div>
                     <p class="offers__container_desc">${offer.description}</p>
-                    <p class = "offers__considered_text">Checking..</p>
+                    <div class = "offers__considered_buttons">
+                        <button data-id="${offer.request_id}" class="offers__considered_refuse">Withdraw</button>
+                    </div>
+
                 </div>
         `
         card.innerHTML = html
@@ -243,7 +255,7 @@ function renderConsideredCategories(chipMap) {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = Number(id) === consideredSelectedCategoryId
-        ? 'offers__search_chip offers__considered_search_chip offers__search_chip-active'
+        ? `offers__search_chip offers__considered_search_chip offers__search_chip-active ${categoryColorClass(id)}`
         : 'offers__search_chip offers__considered_search_chip';
         btn.dataset.id = String(id);
         btn.textContent = name || 'No category';
@@ -263,7 +275,7 @@ function renderChats() {
     }
 
     if (!allChats.length) {
-        container.innerHTML = "There're no chats now.";
+        container.innerHTML = offerEmpty("There're no chats now.");
         return;
     }
 
@@ -291,24 +303,29 @@ function renderChats() {
 
     const sorted = sortOffers(visible, chatsSelectedSort);
 
+    if (!sorted.length) {
+        container.innerHTML = offerEmpty('No chats match your search.');
+        return;
+    }
+
     for (const offer of sorted) {
         const card = document.createElement('div');
 
         card.innerHTML = `
             <div class = "offers__container_top">
-                <p class="offers__specilization">${offer.category_name}</p>
+                ${categoryBadge(offer.category_id, offer.category_name)}
                 <p class="offers__deadline">${offer.deadline}</p>
             </div>
             <div class="offers__container_texts">
                 <h3 class="offers__container_title">${offer.title}</h3>
                 <div class = "offers__container_texts_top">
                     <h3 class="offers__container_award">${formatAward(offer.award)}</h3>
-                    <p class = "offers__container_award_desc">${(offer.currency_name || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '')}</p>                        
+                    <p class = "offers__container_award_desc">${currencySymbol(offer.currency_name)}</p>                        
                     <p class = "offers__container_award_desc">${offer.award_desc}</p>
                 </div>
                 <p class="offers__container_desc">${offer.application_description}</p>
                 <div class = "offers__chat_buttons">
-                    <button type="button" class="open-chat offers__chats_review_button" data-chat-id="${offer.id}">Open chat</button>
+                    <button type="button" class="open-chat offers__chats_review_button" data-chat-id="${offer.id}">Open chat <img class="open-chat__icon" src="images/open_chat-icon.svg" alt=""></button>
                     ${Number(offer.can_withdraw) === 1 ? `<button type="button" class="offers__withdraw offers__chats_withdraw offers__chats_review_button" data-id="${offer.application_id}">Withdraw</button>`: ''}  
                 </div>
             </div>
@@ -337,7 +354,7 @@ function renderChatsCategories(chipMap) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = Number(id) === chatsSelectedCategoryId
-      ? 'offers__search_chip offers__chats_search_chip offers__search_chip-active'
+      ? `offers__search_chip offers__chats_search_chip offers__search_chip-active ${categoryColorClass(id)}`
       : 'offers__search_chip offers__chats_search_chip';
     btn.dataset.id = String(id);
     btn.textContent = name || 'No category';
@@ -357,7 +374,7 @@ function renderDone() {
     }
 
     if (!allDone.length) {
-        container.innerHTML = "There're no done offers now.";
+        container.innerHTML = offerEmpty("There're no done offers now.");
         return;
     }
 
@@ -386,7 +403,7 @@ function renderDone() {
     const sorted = sortOffers(visible, doneSelectedSort);
 
     if (!sorted.length) {
-        container.innerHTML = "No done offers match your search.";
+        container.innerHTML = offerEmpty('No done offers match your search.');
         return;
     }
 
@@ -395,19 +412,19 @@ function renderDone() {
 
         card.innerHTML = `
             <div class = "offers__container_top">
-                <p class="offers__specilization">${offer.category_name}</p>
+                ${categoryBadge(offer.category_id, offer.category_name)}
                 <p class="offers__deadline">${offer.deadline}</p>
             </div>
             <div class="offers__container_texts">
                 <h3 class="offers__container_title">${offer.title}</h3>
                 <div class = "offers__container_texts_top">
                     <h3 class="offers__container_award">${formatAward(offer.award)}</h3>
-                    <p class = "offers__container_award_desc">${(offer.currency_name || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '')}</p>
+                    <p class = "offers__container_award_desc">${currencySymbol(offer.currency_name)}</p>
                     <p class = "offers__container_award_desc">${offer.award_desc}</p>
                 </div>
                 <p class="offers__container_desc">${offer.application_description}</p>
                 <div class = "offers__chat_buttons">
-                    <button type="button" class="open-chat offers__done_review_button" data-chat-id="${offer.chat_id}">Open chat</button>
+                    <button type="button" class="open-chat offers__done_review_button" data-chat-id="${offer.chat_id}">Open chat <img class="open-chat__icon" src="images/open_chat-icon.svg" alt=""></button>
                 </div>
             </div>
         `;
@@ -436,7 +453,7 @@ function renderDoneCategories(chipMap) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = Number(id) === doneSelectedCategoryId
-      ? 'offers__search_chip offers__done_search_chip offers__search_chip-active'
+      ? `offers__search_chip offers__done_search_chip offers__search_chip-active ${categoryColorClass(id)}`
       : 'offers__search_chip offers__done_search_chip';
     btn.dataset.id = String(id);
     btn.textContent = name || 'No category';
@@ -480,12 +497,12 @@ document.addEventListener('click', async (e) => {
 
         const body = section.querySelector('.offers__section_body');
 
-        body.hidden = !body.hidden;
+        body.classList.toggle('offers__section_body-open');
 
-        if (body.hidden) {
-            localStorage.removeItem('openedOffersSection');
-        } else {
+        if (body.classList.contains('offers__section_body-open')) {
             localStorage.setItem('openedOffersSection', section.dataset.section);
+        } else {
+            localStorage.removeItem('openedOffersSection');
         }
 
         return;
@@ -550,6 +567,26 @@ document.addEventListener('click', async (e) => {
         renderConsidered();
     }
 
+    const refuseButton = e.target.closest('.offers__considered_refuse');
+
+    if (refuseButton){
+        const fd = new FormData();
+        fd.append('request_id', refuseButton.dataset.id);
+
+        const res = await fetch('considered_refuse.php', {
+            method: 'POST',
+            body: fd
+        });
+
+        const data = await res.json();
+
+        if (data.ok) {
+            loadOffers();
+        }
+
+        return;
+    }
+
     //chat
     const btn = e.target.closest('.open-chat');
     if (btn){
@@ -559,6 +596,11 @@ document.addEventListener('click', async (e) => {
 
     const withdrawButton = e.target.closest('.offers__chats_withdraw');
     if (withdrawButton) {
+        const isConfirmed = confirm('Withdraw from this work?\n\nThe chat will be permanently deleted and the offer will become globally available again.');
+
+        if (!isConfirmed) {
+            return;
+        }
         const fd = new FormData();
         fd.append('application_id', withdrawButton.dataset.id);
 
@@ -654,11 +696,15 @@ document.querySelectorAll('.offers').forEach((section) => {
 
     if (section.dataset.section === 'available') {
         section.classList.add('offers__section-always-open');
-        body.hidden = false;
+        body.classList.add('offers__section_body-open');
         return;
     }
 
-    body.hidden = section.dataset.section !== openedSection;
+    if (section.dataset.section === openedSection) {
+        body.classList.add('offers__section_body-open');
+    } else {
+        body.classList.remove('offers__section_body-open');
+    }
 });
 
 function getOfferSearchText(offer) {

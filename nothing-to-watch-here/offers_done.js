@@ -5,6 +5,19 @@ let doneSearchText = '';
 let doneSelectedSort = 'default';
 let doneSelectedCategoryId = 0;
 
+function formatAward(award) {
+    const number = Number(award);
+
+    if (!Number.isFinite(number)) {
+        return award || '0';
+    }
+
+    return number.toLocaleString('en-US');
+}
+
+function currencySymbol(currency) {
+    return (currency || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '');
+}
 
 async function loadDone(){
     const res = await fetch('./done_list.php')
@@ -19,7 +32,7 @@ function renderDone(){
     doneContainer.innerHTML = '';
 
     if (!allDoneRows.length) {
-        doneContainer.innerHTML = 'There are no completed offers.';
+        doneContainer.innerHTML = adminEmpty('There are no completed offers.');
         return;
     }
 
@@ -67,7 +80,7 @@ function renderDone(){
     }
 
     if (!sorted.length) {
-        doneContainer.innerHTML = 'There are no completed offers.';
+        doneContainer.innerHTML = adminEmpty('No completed offers match your search.');
         return;
     }
 
@@ -77,19 +90,19 @@ function renderDone(){
             
         <div class="admin__container_info">
             <div class="admin__container_top">
-                <p class="admin__specilization">${a.category_name}</p>
+                ${categoryBadge(a.category_id, a.category_name)}
             </div>
             <div class="admin__container_texts">
                 <h3 class="admin__container_title">${a.title}</h3>
                 <div class="admin__container_texts_top">
-                    <h3 class="admin__container_award">${a.award}</h3>
-                    <p class="admin__container_award_currency">${(a.currency_name || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '')}</p>
+                    <h3 class="admin__container_award">${formatAward(a.award)}</h3>
+                    <p class="admin__container_award_currency">${currencySymbol(a.currency_name)}</p>
                     <p class="admin__container_award_desc">${a.award_desc}</p>
                 </div>
                 <p class="admin__container_desc">${a.application_description}</p>
             </div>
             <div class="admin__archive_actions">
-                <button type="button" class="open__done_chat" data-chat-id="${a.chat_id}">Open chat</button>
+                <button type="button" class="open__done_chat" data-chat-id="${a.chat_id}">Open chat <img class="open-chat__icon" src="../images/open_chat-icon.svg" alt=""></button>
                 <button type="button" class="delete__action_btn" data-action="delete" data-id="${a.id}">Delete</button>
             </div>
         </div>

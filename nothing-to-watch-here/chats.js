@@ -13,6 +13,10 @@ function formatAward(award) {
   return number.toLocaleString('en-US');
 }
 
+function currencySymbol(currency) {
+  return (currency || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '');
+}
+
 (async () =>{
 
 const res = await fetch('chat_list.php');
@@ -73,7 +77,7 @@ function renderChats(chats){
   }
 
   if (groups.length === 0){
-    container.innerHTML = "There're no chats.";
+    container.innerHTML = adminEmpty("There're no chats.");
     return;
   }
 
@@ -84,19 +88,19 @@ function renderChats(chats){
     card.innerHTML = `
       <div>
           <div class = "offers__container_top">
-              <p class="offers__specilization">${chat.category_name}</p>
+              ${categoryBadge(chat.category_id, chat.category_name)}
               <p class="offers__deadline">${chat.deadline}</p>
           </div>
           <div class="offers__container_texts">
               <h3 class="offers__container_title">${chat.title}</h3>
               <div class = "offers__container_texts_top">
                   <h3 class="offers__container_award">${formatAward(chat.award)}</h3>
-                  <p class = "offers__container_award_desc">${(chat.currency_name || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '')}</p>                        
+                  <p class = "offers__container_award_desc">${currencySymbol(chat.currency_name)}</p>                        
                   <p class = "offers__container_award_desc">${chat.award_desc}</p>
               </div>
               <p class="offers__container_desc">${chat.application_description}</p>
               <div class = "admin__chat_buttons">
-                <button type="button" class="open-chat admin__chats_review_button" data-chat-id="${chat.id}">Open chat</button>
+                <button type="button" class="open-chat admin__chats_review_button" data-chat-id="${chat.id}">Open chat <img class="open-chat__icon" src="../images/open_chat-icon.svg" alt=""></button>
                 <button type="button" class="admin__delete admin__chats_delete admin__chats_review_button" data-id="${chat.application_id}">Delete</button>
               </div>
           </div>

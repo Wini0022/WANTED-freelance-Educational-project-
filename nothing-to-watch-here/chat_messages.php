@@ -10,6 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $userId = (int)$_SESSION['user_id'];
 $chatId = (int)($_GET['chat_id'] ?? 0);
+$afterId = (int)($_GET['after_id'] ?? 0);
 
 $isAdmin = ((int)($_SESSION['user_role'] ?? 0) === 1);
 $isAdminInt = $isAdmin ? 1 : 0;
@@ -61,11 +62,11 @@ $stmt = $mysqli->prepare('
       u.role AS sender_role
     FROM chat_messages m
     JOIN users u ON u.id = m.sender_id
-    WHERE m.chat_id = ?
+    WHERE m.chat_id = ? AND m.id > ?
     ORDER BY m.id ASC
 ');
 
-$stmt->bind_param('i', $chatId);
+$stmt->bind_param('ii', $chatId, $afterId);
 $stmt->execute();
 $messages = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();

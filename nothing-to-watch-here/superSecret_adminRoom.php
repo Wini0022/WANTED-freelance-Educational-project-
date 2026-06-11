@@ -27,7 +27,9 @@
                 <div class = "admin__searching_bottom">
 
                     <div class = "admin__search_sort">
-                        <button type="button" class="admin__search_sort-trigger">Filter</button>
+                        <button type="button" class="admin__search_sort-trigger" aria-label="Filter">
+                            <img class="admin__trigger_image admin__trigger_image_not-available" src="../images/filter_not-available_icon.svg" alt="">
+                        </button>
                         <div class = "admin__search_sort_options">
                             <button type="button" class="admin__search_sort-option admin__search_chip-active" data-sort="default">Default</button>
                             <button type="button" class="admin__search_sort-option" data-sort="award_desc">Award: high to low</button>
@@ -52,7 +54,9 @@
 
                 <div class="admin__searching_bottom">
                     <div class="admin__search_sort">
-                        <button type="button" class="admin__search_sort-trigger admin__response_search_sort-trigger">Filter</button>
+                        <button type="button" class="admin__search_sort-trigger admin__response_search_sort-trigger" aria-label="Filter">
+                            <img class="admin__trigger_image admin__trigger_image_not-available" src="../images/filter_not-available_icon.svg" alt="">
+                        </button>
                         <div class="admin__search_sort_options">
                             <button type="button" class="admin__search_sort-option admin__response_search_sort-option admin__search_chip-active" data-sort="default" >Default</button>
                             <button type="button" class="admin__search_sort-option admin__response_search_sort-option" data-sort="award_desc">Award: high to low</button>
@@ -81,7 +85,9 @@
 
                 <div class="admin__searching_bottom">
                     <div class="admin__search_sort">
-                        <button type="button" class="admin__search_sort-trigger admin__chats_search_sort-trigger">Filter</button>
+                        <button type="button" class="admin__search_sort-trigger admin__chats_search_sort-trigger" aria-label="Filter">
+                            <img class="admin__trigger_image admin__trigger_image_not-available" src="../images/filter_not-available_icon.svg" alt="">
+                        </button>
                         <div class="admin__search_sort_options">
                             <button type="button" class="admin__search_sort-option admin__chats_search_sort-option admin__search_chip-active" data-sort="default" >Default</button>
                             <button type="button" class="admin__search_sort-option admin__chats_search_sort-option" data-sort="award_desc">Award: high to low</button>
@@ -108,7 +114,9 @@
 
                 <div class="admin__searching_bottom">
                     <div class="admin__search_sort">
-                        <button type="button" class="admin__search_sort-trigger admin__done_search_sort-trigger">Filter</button>
+                        <button type="button" class="admin__search_sort-trigger admin__done_search_sort-trigger" aria-label="Filter">
+                            <img class="admin__trigger_image admin__trigger_image_not-available" src="../images/filter_not-available_icon.svg" alt="">
+                        </button>
                         <div class="admin__search_sort_options">
                             <button type="button" class="admin__search_sort-option admin__done_search_sort-option admin__search_chip-active" data-sort="default" >Default</button>
                             <button type="button" class="admin__search_sort-option admin__done_search_sort-option" data-sort="award_desc">Award: high to low</button>
@@ -136,7 +144,9 @@
 
                 <div class="admin__searching_bottom">
                     <div class="admin__search_sort">
-                        <button type="button" class="admin__search_sort-trigger admin__archivated_search_sort-trigger">Filter</button>
+                        <button type="button" class="admin__search_sort-trigger admin__archivated_search_sort-trigger" aria-label="Filter">
+                            <img class="admin__trigger_image admin__trigger_image_not-available" src="../images/filter_not-available_icon.svg" alt="">
+                        </button>
                         <div class="admin__search_sort_options">
                             <button type="button" class="admin__search_sort-option admin__archivated_search_sort-option admin__search_chip-active" data-sort="default" >Default</button>
                             <button type="button" class="admin__search_sort-option admin__archivated_search_sort-option" data-sort="award_desc">Award: high to low</button>

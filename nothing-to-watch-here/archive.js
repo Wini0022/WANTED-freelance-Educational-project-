@@ -4,6 +4,20 @@ let ArchivatedSearchText = '';
 let ArchivatedSelectedSort = 'default';
 let ArchivatedSelectedCategoryId = 0;
 
+function formatAward(award) {
+    const number = Number(award);
+
+    if (!Number.isFinite(number)) {
+        return award || '0';
+    }
+
+    return number.toLocaleString('en-US');
+}
+
+function currencySymbol(currency) {
+    return (currency || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '');
+}
+
 async function loadArchive(){
   const res = await fetch('archive_list.php');
   const data = await res.json();
@@ -15,7 +29,7 @@ function renderArchive(){
     archiveContainer.innerHTML = '';
 
     if (!allArchivatedRows.length) {
-        archiveContainer.innerHTML = 'Archive is empty.';
+        archiveContainer.innerHTML = adminEmpty('Archive is empty.');
         return;
     }
 
@@ -63,7 +77,7 @@ function renderArchive(){
     }
 
     if (!sorted.length) {
-        archiveContainer.innerHTML = 'Archive is empty.';
+        archiveContainer.innerHTML = adminEmpty('No archived offers match your search.');
         return;
     }
     for (const a of sorted) {
@@ -73,13 +87,13 @@ function renderArchive(){
         <div class="admin__container_info">
             <div class="admin__container_top">
                 <p class="admin__archive_days">Days left: ${a.days_left} дн.</p>
-                <p class="admin__specilization">${a.category_name}</p>
+                ${categoryBadge(a.category_id, a.category_name)}
             </div>
             <div class="admin__container_texts">
                 <h3 class="admin__container_title">${a.title}</h3>
                 <div class="admin__container_texts_top">
-                    <h3 class="admin__container_award">${a.award}</h3>
-                    <p class="admin__container_award_currency">${(a.currency_name || '').replace(/\s*[\u{1F1E6}-\u{1F1FF}]{2}\s*$/u, '')}</p>
+                    <h3 class="admin__container_award">${formatAward(a.award)}</h3>
+                    <p class="admin__container_award_currency">${currencySymbol(a.currency_name)}</p>
                     <p class="admin__container_award_desc">${a.award_desc}</p>
                 </div>
                 <p class="admin__container_desc">${a.application_description}</p>

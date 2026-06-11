@@ -21,7 +21,6 @@
         $isAuth = isset($_SESSION['user_id']);
         $isAdmin = $isAuth && (int)($_SESSION['user_role'] ?? 0) === 1;
         $error = $_SESSION['auth_error'] ?? null;
-        echo($error);
         unset($_SESSION['auth_error']); //unset удалить
     ?>
     <?php
@@ -95,6 +94,9 @@
                     <input class = "account__nickname account__input" name = "account__nickname" autocomplete="username" type = "text" placeholder = "Nickname" required>
                     <input class = "account__password account__input" name = "account__password" type = "password" placeholder = "Password" required minlength = "5" autocomplete="current-password">   
                 </div>
+                <?php if ($error): ?>
+                    <p class="account__auth_error"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
+                <?php endif ?>
                 <input class = "account__submit account__input" disabled name = "account__submit" type = "submit" value = "Enter">   
             </form>
         </section>
@@ -113,83 +115,92 @@
 
     </section>
     <?php endif ?>
-    <section class="offers offers__considered<?= (!$isAuth || $isAdmin) ? ' offers__admin-hidden' : '' ?>" data-section="considered">
-        <button type="button" class="offers__section_trigger">Being considered 👀</button>
+    <div class = "top__offers_wrap">
+        <section class="offers offers__considered<?= (!$isAuth || $isAdmin) ? ' offers__admin-hidden' : '' ?>" data-section="considered">
+            <button type="button" class="offers__section_trigger">Being considered 👀</button>
 
-        <div class="offers__section_body">
+            <div class="offers__section_body">
 
-            <div class="offers__containers_searching">
-                <input class="offers__search_input offers__considered_search_input" type="search" placeholder="Search offer...">
+                <div class="offers__containers_searching">
+                    <input class="offers__search_input offers__considered_search_input" type="search" placeholder="Search offer...">
 
-                <div class="offers__searching_bottom">
-                    <div class="offers__search_sort">
-                        <button type="button" class="offers__search_sort-trigger offers__considered_search_sort-trigger">Filter</button>
+                    <div class="offers__searching_bottom">
+                        <div class="offers__search_sort">
+                            <button type="button" class="offers__search_sort-trigger offers__considered_search_sort-trigger" aria-label="Filter">
+                                <img class="offers__trigger_image offers__trigger_image_not-available" src="images/filter_not-available_icon.svg" alt="">
+                            </button>
 
-                        <div class="offers__search_sort_options">
-                            <button type="button" class="offers__search_sort-option offers__considered_search_sort-option offers__search_chip-active" data-sort="default">Default</button>
-                            <button type="button" class="offers__search_sort-option offers__considered_search_sort-option" data-sort="award_desc">Award: high to low</button>
-                            <button type="button" class="offers__search_sort-option offers__considered_search_sort-option" data-sort="award_asc">Award: low to high</button>
+                            <div class="offers__search_sort_options">
+                                <button type="button" class="offers__search_sort-option offers__considered_search_sort-option offers__search_chip-active" data-sort="default">Default</button>
+                                <button type="button" class="offers__search_sort-option offers__considered_search_sort-option" data-sort="award_desc">Award: high to low</button>
+                                <button type="button" class="offers__search_sort-option offers__considered_search_sort-option" data-sort="award_asc">Award: low to high</button>
+                            </div>
                         </div>
+                        <div class="offers__search_categories offers__considered_search_categories"></div>
                     </div>
                 </div>
-                <div class="offers__search_categories offers__considered_search_categories"></div>
+
+                <div class="offers__containers offers__considered_containers"></div>
             </div>
+        </section>
 
-            <div class="offers__containers offers__considered_containers"></div>
-        </div>
-    </section>
+        <section class="offers offers__chats<?= (!$isAuth || $isAdmin) ? ' offers__admin-hidden' : '' ?>" data-section="chats">
+            <button type="button" class="offers__section_trigger">Active work & Chats 💼</button>
 
-    <section class="offers offers__chats<?= (!$isAuth || $isAdmin) ? ' offers__admin-hidden' : '' ?>" data-section="chats">
-        <button type="button" class="offers__section_trigger">Active work & Chats 💼</button>
+            <div class="offers__section_body">
 
-        <div class="offers__section_body">
+                <div class="offers__containers_searching">
+                    <input class="offers__search_input offers__chats_search_input" type="search" placeholder="Search offer...">
 
-            <div class="offers__containers_searching">
-                <input class="offers__search_input offers__chats_search_input" type="search" placeholder="Search offer...">
+                    <div class="offers__searching_bottom">
+                        <div class="offers__search_sort">
+                            <button type="button" class="offers__search_sort-trigger offers__chats_search_sort-trigger" aria-label="Filter">
+                                <img class="offers__trigger_image offers__trigger_image_not-available" src="images/filter_not-available_icon.svg" alt="">
+                            </button>
 
-                <div class="offers__searching_bottom">
-                    <div class="offers__search_sort">
-                        <button type="button" class="offers__search_sort-trigger offers__chats_search_sort-trigger">Filter</button>
-
-                        <div class="offers__search_sort_options">
-                            <button type="button" class="offers__search_sort-option offers__chats_search_sort-option offers__search_chip-active" data-sort="default">Default</button>
-                            <button type="button" class="offers__search_sort-option offers__chats_search_sort-option" data-sort="award_desc">Award: high to low</button>
-                            <button type="button" class="offers__search_sort-option offers__chats_search_sort-option" data-sort="award_asc">Award: low to high</button>
+                            <div class="offers__search_sort_options">
+                                <button type="button" class="offers__search_sort-option offers__chats_search_sort-option offers__search_chip-active" data-sort="default">Default</button>
+                                <button type="button" class="offers__search_sort-option offers__chats_search_sort-option" data-sort="award_desc">Award: high to low</button>
+                                <button type="button" class="offers__search_sort-option offers__chats_search_sort-option" data-sort="award_asc">Award: low to high</button>
+                            </div>
                         </div>
+                        <div class="offers__search_categories offers__chats_search_categories"></div>
                     </div>
                 </div>
-                <div class="offers__search_categories offers__chats_search_categories"></div>
+
+                <div class="offers__containers offers__chats_containers"></div>
             </div>
+        </section>
 
-            <div class="offers__containers offers__chats_containers"></div>
-        </div>
-    </section>
+        <section class="offers offers__done<?= (!$isAuth || $isAdmin) ? ' offers__admin-hidden' : '' ?>" data-section="done">
+            <button type="button" class="offers__section_trigger">Done ✅</button>
 
-    <section class="offers offers__done<?= (!$isAuth || $isAdmin) ? ' offers__admin-hidden' : '' ?>" data-section="done">
-        <button type="button" class="offers__section_trigger">Done ✅</button>
+            <div class="offers__section_body">
 
-        <div class="offers__section_body">
+                <div class="offers__containers_searching">
+                    <input class="offers__search_input offers__done_search_input" type="search" placeholder="Search offer...">
 
-            <div class="offers__containers_searching">
-                <input class="offers__search_input offers__done_search_input" type="search" placeholder="Search offer...">
+                    <div class="offers__searching_bottom">
+                        <div class="offers__search_sort">
+                            <button type="button" class="offers__search_sort-trigger offers__done_search_sort-trigger" aria-label="Filter">
+                                <img class="offers__trigger_image offers__trigger_image_not-available" src="images/filter_not-available_icon.svg" alt="">
+                            </button>
 
-                <div class="offers__searching_bottom">
-                    <div class="offers__search_sort">
-                        <button type="button" class="offers__search_sort-trigger offers__done_search_sort-trigger">Filter</button>
-
-                        <div class="offers__search_sort_options">
-                            <button type="button" class="offers__search_sort-option offers__done_search_sort-option offers__search_chip-active" data-sort="default">Default</button>
-                            <button type="button" class="offers__search_sort-option offers__done_search_sort-option" data-sort="award_desc">Award: high to low</button>
-                            <button type="button" class="offers__search_sort-option offers__done_search_sort-option" data-sort="award_asc">Award: low to high</button>
+                            <div class="offers__search_sort_options">
+                                <button type="button" class="offers__search_sort-option offers__done_search_sort-option offers__search_chip-active" data-sort="default">Default</button>
+                                <button type="button" class="offers__search_sort-option offers__done_search_sort-option" data-sort="award_desc">Award: high to low</button>
+                                <button type="button" class="offers__search_sort-option offers__done_search_sort-option" data-sort="award_asc">Award: low to high</button>
+                            </div>
                         </div>
+                        <div class="offers__search_categories offers__done_search_categories"></div>
                     </div>
                 </div>
-                <div class="offers__search_categories offers__done_search_categories"></div>
-            </div>
 
-            <div class="offers__containers offers__done_containers"></div>
-        </div>
-    </section>
+                <div class="offers__containers offers__done_containers"></div>
+            </div>
+        </section>
+    </div> 
+
 
     <section class="offers offers__available" data-section="available">
         <h2 class = "offers__available_title">All global offers  🌎</h2>
