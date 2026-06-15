@@ -75,9 +75,11 @@ $appStatus = $row['application_status'];
             <h3 class = "chat_name"><?=$peerName?></h3>
             <?php if ($isAdmin): ?>
             <div class="chat_actions">
-                <button type="button" id="chat-actions-toggle">⋯</button>
-                <div id="chat-actions-menu" hidden>
-                    <button type="button" class="chat-action-btn" data-action="complete">Completed!</button>
+                <button type="button" id="chat-actions-toggle" aria-label="Chat actions">
+                    <img class="chat-actions-toggle-icon" src="../images/actions__trigger_chat.svg" alt="">
+                </button>
+                <div id="chat-actions-menu">
+                    <button type="button" class="chat-action-btn" data-action="complete">Mark completed</button>
                     <button type="button" class="chat-action-btn" data-action="reject_candidate">Reject candidate</button>
                 </div>
             </div> 
@@ -88,8 +90,8 @@ $appStatus = $row['application_status'];
         <div id="messages"></div>
 
         <form id="send-form">
-            <input id="body" name="body" type="text" autocomplete="off" required placeholder="Write a message...">
-            <button type="submit"><img class = "submit__image" src = "../images/chat_send_image.svg"></button>
+            <textarea id="body" name="body" autocomplete="off" required placeholder="Write a message..." rows="1"></textarea>
+            <button type="submit"><img class = "submit__image" src = "../images/chat_send_image.png"></button>
         </form>
     </section>
 
@@ -98,16 +100,58 @@ $appStatus = $row['application_status'];
 const chatId = new URLSearchParams(window.location.search).get('chat_id'); //получение переменной из ссылки
 const messagesEl = document.getElementById('messages');
 const form = document.getElementById('send-form');
+
 const bodyInput = document.getElementById('body');
+
+const draftKey = `chat-draft-${chatId}`;
+
 const currentUserId  = <?= (int)$userId ?>;
 
+function syncComposerSpace() {
+    document.body.style.setProperty('--send-form-height', `${form.offsetHeight}px`);
+}
+const composerObserver = new ResizeObserver(syncComposerSpace);
+
+composerObserver.observe(form);
+syncComposerSpace();
+
 function syncSendButton() {
-  const hasText = bodyInput.value.trim().length > 0;
-  form.classList.toggle('send-form-active', hasText);
+    const hasText = bodyInput.value.trim().length > 0;
+    form.classList.toggle('send-form-active', hasText);
+}
+function syncBodyHeight() {
+    const styles = getComputedStyle(bodyInput);
+    const minHeight = parseFloat(styles.minHeight);
+    const maxHeight = parseFloat(styles.maxHeight);
+
+    bodyInput.style.height = `${minHeight}px`;
+    bodyInput.style.overflowY = 'hidden';
+
+    bodyInput.offsetHeight;
+
+    const nextHeight = Math.min(bodyInput.scrollHeight, maxHeight);
+
+    bodyInput.style.height = `${nextHeight}px`;
+
+    if (nextHeight >= maxHeight) {
+        bodyInput.style.overflowY = 'auto';
+    }
 }
 
-bodyInput.addEventListener('input', syncSendButton);
-syncSendButton();
+function syncMessageInput() {
+    syncSendButton();
+    syncBodyHeight();
+    syncComposerSpace();
+}
+
+bodyInput.addEventListener('input', () => {
+    localStorage.setItem(draftKey, bodyInput.value);
+    syncMessageInput();
+});
+
+bodyInput.value = localStorage.getItem(draftKey) || '';
+syncMessageInput();
+form.classList.add('send-form-ready');
 
 const appStatus = <?= $appStatus ?>;
 if (appStatus === 3) {
@@ -250,12 +294,13 @@ form.addEventListener('submit', async (e) => {
   const data = await res.json();
   if (data.ok) {
     bodyInput.value = '';
-    syncSendButton();
+    localStorage.removeItem(draftKey);
+    syncMessageInput();
     await loadMessages();
   }
 });
 
-loadMessages();
+loadMessages()
 setInterval(loadMessages, 2500);
 
 document.getElementById('chat-cancel').addEventListener('click', () => {
@@ -266,7 +311,7 @@ const menu = document.getElementById('chat-actions-menu');
 
 if (toggleBtn && menu) {
   toggleBtn.addEventListener('click', () => {
-    menu.hidden = !menu.hidden;
+    menu.classList.toggle('chat-actions-menu-open');
   });
 }
 
@@ -279,6 +324,8 @@ document.addEventListener('click', async (e)=>{
     const text = action === 'complete'
         ? 'Mark this application as Completed?'
         : 'Reject current candidate and reopen application?';
+
+    if (!confirm(text)) return;
 
     const fd = new FormData()
     fd.append('application_id', applicationId)

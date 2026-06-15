@@ -57,9 +57,9 @@ if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FIL
         exit;
     }
 
-    $maxSize = 2 * 1024 * 1024;
+    $maxSize = 3 * 1024 * 1024;
     if ($file['size'] > $maxSize) {
-        $_SESSION['auth_error'] = 'Avatar too large (max 2MB)';
+        $_SESSION['auth_error'] = 'Avatar too large (max 3MB)';
         header('Location: account.php');
         exit;
     }
@@ -132,6 +132,8 @@ $_SESSION['all_exp_months'] = $experience_months;
 
 
 $_SESSION['profile_info'] = ($affectedRows > 0) ? 'Profile updated' : 'No changes';
+
+$_SESSION['profile_saved'] = true;
 
 header('Location: account.php');
 exit;

@@ -28,6 +28,12 @@ function renderArchive(){
     if (!archiveContainer) return;
     archiveContainer.innerHTML = '';
 
+    const searching = document.querySelector('.admin__panel_section-archive .admin__containers_searching');
+
+    if (searching) {
+        searching.hidden = !allArchivatedRows.length;
+    }
+
     if (!allArchivatedRows.length) {
         archiveContainer.innerHTML = adminEmpty('Archive is empty.');
         return;
@@ -84,28 +90,26 @@ function renderArchive(){
         const card = document.createElement('div')
         const html = `
         
-        <div class="admin__container_info">
-            <div class="admin__container_top">
-                <p class="admin__archive_days">Days left: ${a.days_left} дн.</p>
-                ${categoryBadge(a.category_id, a.category_name)}
+        <div class="offers__container_top">
+            <p class="offers__deadline admin__archive_days">Days left: ${a.days_left} дн.</p>
+            ${categoryBadge(a.category_id, a.category_name)}
+        </div>
+        <div class="offers__container_texts">
+            <h3 class="offers__container_title">${a.title}</h3>
+            <div class="offers__container_texts_top">
+                <h3 class="offers__container_award">${formatAward(a.award)}</h3>
+                <p class="offers__container_award_desc">${currencySymbol(a.currency_name)}</p>
+                <p class="offers__container_award_desc">${a.award_desc}</p>
             </div>
-            <div class="admin__container_texts">
-                <h3 class="admin__container_title">${a.title}</h3>
-                <div class="admin__container_texts_top">
-                    <h3 class="admin__container_award">${formatAward(a.award)}</h3>
-                    <p class="admin__container_award_currency">${currencySymbol(a.currency_name)}</p>
-                    <p class="admin__container_award_desc">${a.award_desc}</p>
-                </div>
-                <p class="admin__container_desc">${a.application_description}</p>
-            </div>
-            <div class="admin__archive_actions">
-                <button type="button" class="archive-action-btn" data-action="republish" data-id="${a.id}">Republish</button>
-                <button type="button" class="archive-action-btn" data-action="delete" data-id="${a.id}">Delete now</button>
-            </div>
+            <p class="offers__container_desc">${a.application_description}</p>
+        </div>
+        <div class="admin__archive_actions">
+            <button type="button" class="archive-action-btn" data-action="republish" data-id="${a.id}">Republish</button>
+            <button type="button" class="archive-action-btn" data-action="delete" data-id="${a.id}">Delete now</button>
         </div>
         `
         card.innerHTML = html
-        card.classList.add('admin__archive_container')
+        card.classList.add('offers__container', 'admin__archive_container')
         archiveContainer.appendChild(card)
     }
 }
@@ -210,7 +214,7 @@ function renderArchivatedCategories(chipMap) {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = Number(id) === ArchivatedSelectedCategoryId
-            ? 'admin__search_chip admin__archivated_search_chip admin__search_chip-active'
+            ? `admin__search_chip admin__archivated_search_chip admin__search_chip-active ${categoryColorClass(id)}`
             : 'admin__search_chip admin__archivated_search_chip';
         btn.dataset.id = String(id);
         btn.textContent = name;

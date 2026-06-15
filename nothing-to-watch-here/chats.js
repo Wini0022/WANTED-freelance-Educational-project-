@@ -28,6 +28,17 @@ container.innerHTML = '';
 function renderChats(chats){
   container.innerHTML = ''
 
+  const searching = document.querySelector('.admin__panel_section-chats .admin__containers_searching');
+
+  if (searching) {
+    searching.hidden = !chats.length;
+  }
+
+  if (!chats.length) {
+    container.innerHTML = adminEmpty("There're no chats.");
+    return;
+  }
+
   const searched = chats.filter((offer) => {
   const text = `
       ${offer.title || ''}
@@ -85,24 +96,23 @@ function renderChats(chats){
   for (const group of groups) {
     const chat = group.app;
     const card = document.createElement('div');
+    card.classList.add('offers__container');
     card.innerHTML = `
-      <div>
-          <div class = "offers__container_top">
-              ${categoryBadge(chat.category_id, chat.category_name)}
-              <p class="offers__deadline">${chat.deadline}</p>
+      <div class = "offers__container_top">
+          ${categoryBadge(chat.category_id, chat.category_name)}
+          <p class="offers__deadline">${chat.deadline}</p>
+      </div>
+      <div class="offers__container_texts">
+          <h3 class="offers__container_title">${chat.title}</h3>
+          <div class = "offers__container_texts_top">
+              <h3 class="offers__container_award">${formatAward(chat.award)}</h3>
+              <p class = "offers__container_award_desc">${currencySymbol(chat.currency_name)}</p>
+              <p class = "offers__container_award_desc">${chat.award_desc}</p>
           </div>
-          <div class="offers__container_texts">
-              <h3 class="offers__container_title">${chat.title}</h3>
-              <div class = "offers__container_texts_top">
-                  <h3 class="offers__container_award">${formatAward(chat.award)}</h3>
-                  <p class = "offers__container_award_desc">${currencySymbol(chat.currency_name)}</p>                        
-                  <p class = "offers__container_award_desc">${chat.award_desc}</p>
-              </div>
-              <p class="offers__container_desc">${chat.application_description}</p>
-              <div class = "admin__chat_buttons">
-                <button type="button" class="open-chat admin__chats_review_button" data-chat-id="${chat.id}">Open chat <img class="open-chat__icon" src="../images/open_chat-icon.svg" alt=""></button>
-                <button type="button" class="admin__delete admin__chats_delete admin__chats_review_button" data-id="${chat.application_id}">Delete</button>
-              </div>
+          <p class="offers__container_desc">${chat.application_description}</p>
+          <div class = "admin__chat_buttons">
+            <button type="button" class="open-chat admin__chats_review_button" data-chat-id="${chat.id}">Open chat <img class="open-chat__icon" src="../images/open_chat-icon.svg" alt=""></button>
+            <button type="button" class="admin__delete admin__chats_delete admin__chats_review_button" data-id="${chat.application_id}">Delete</button>
           </div>
       </div>
     `;
@@ -193,7 +203,7 @@ function renderChatsCategories(chipMap) {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = Number(id) === chatsSelectedCategoryId
-            ? 'admin__search_chip admin__chats_search_chip admin__search_chip-active'
+            ? `admin__search_chip admin__chats_search_chip admin__search_chip-active ${categoryColorClass(id)}`
             : 'admin__search_chip admin__chats_search_chip';
         btn.dataset.id = String(id);
         btn.textContent = name;

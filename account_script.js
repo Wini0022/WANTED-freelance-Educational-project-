@@ -15,14 +15,41 @@ function hasChanges() {
   });
 }
 
+fields.forEach((field) => {
+    if (!field.name) return;
+    if (field.type === 'file') return;
+    if (field.readOnly) return;
+
+    const key = `account-draft-${window.ACCOUNT_USER_ID}-${field.name}`;
+
+    if (window.PROFILE_SAVED) {
+      localStorage.removeItem(key);
+      return;
+    }
+    const savedValue = localStorage.getItem(key);
+
+    if (savedValue !== null) {
+      field.value = savedValue;
+    }
+
+    field.addEventListener('input', () => {
+      localStorage.setItem(key, field.value);
+    });
+
+    field.addEventListener('change', () => {
+      localStorage.setItem(key, field.value);
+    });
+
+});
+
 
 
 function syncSubmit() {
-  let changed = hasChanges();
-  submit.style.display = changed ? 'block' : 'none';
-  cancel.style.display = changed ? 'block' : 'none';
-  submit.disabled = !changed;
-  cancel.disabled = !changed;
+    let changed = hasChanges();
+    submit.style.display = changed ? 'block' : 'none';
+    cancel.style.display = changed ? 'block' : 'none';
+    submit.disabled = !changed || !form.checkValidity();
+    cancel.disabled = !changed;
 }
 
 

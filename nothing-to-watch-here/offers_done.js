@@ -31,6 +31,12 @@ function renderDone(){
     if (!doneContainer) return;
     doneContainer.innerHTML = '';
 
+    const searching = document.querySelector('.admin__panel_section-done .admin__containers_searching');
+
+    if (searching) {
+        searching.hidden = !allDoneRows.length;
+    }
+
     if (!allDoneRows.length) {
         doneContainer.innerHTML = adminEmpty('There are no completed offers.');
         return;
@@ -88,27 +94,25 @@ function renderDone(){
         const card = document.createElement('div');
         const html = `
             
-        <div class="admin__container_info">
-            <div class="admin__container_top">
-                ${categoryBadge(a.category_id, a.category_name)}
+        <div class="offers__container_top">
+            ${categoryBadge(a.category_id, a.category_name)}
+        </div>
+        <div class="offers__container_texts">
+            <h3 class="offers__container_title">${a.title}</h3>
+            <div class="offers__container_texts_top">
+                <h3 class="offers__container_award">${formatAward(a.award)}</h3>
+                <p class="offers__container_award_desc">${currencySymbol(a.currency_name)}</p>
+                <p class="offers__container_award_desc">${a.award_desc}</p>
             </div>
-            <div class="admin__container_texts">
-                <h3 class="admin__container_title">${a.title}</h3>
-                <div class="admin__container_texts_top">
-                    <h3 class="admin__container_award">${formatAward(a.award)}</h3>
-                    <p class="admin__container_award_currency">${currencySymbol(a.currency_name)}</p>
-                    <p class="admin__container_award_desc">${a.award_desc}</p>
-                </div>
-                <p class="admin__container_desc">${a.application_description}</p>
-            </div>
-            <div class="admin__archive_actions">
-                <button type="button" class="open__done_chat" data-chat-id="${a.chat_id}">Open chat <img class="open-chat__icon" src="../images/open_chat-icon.svg" alt=""></button>
-                <button type="button" class="delete__action_btn" data-action="delete" data-id="${a.id}">Delete</button>
-            </div>
+            <p class="offers__container_desc">${a.application_description}</p>
+        </div>
+        <div class="admin__archive_actions">
+            <button type="button" class="open-chat open__done_chat" data-chat-id="${a.chat_id}">Open chat <img class="open-chat__icon" src="../images/open_chat-icon.svg" alt=""></button>
+            <button type="button" class="delete__action_btn" data-action="delete" data-id="${a.id}">Delete</button>
         </div>
         `
         card.innerHTML = html
-        card.classList.add('admin__done_container')
+        card.classList.add('offers__container', 'admin__done_container')
         doneContainer.appendChild(card)
     }
 
@@ -133,7 +137,7 @@ function renderDoneCategories(chipMap) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = Number(id) === doneSelectedCategoryId
-      ? 'admin__search_chip admin__done_search_chip admin__search_chip-active'
+      ? `admin__search_chip admin__done_search_chip admin__search_chip-active ${categoryColorClass(id)}`
       : 'admin__search_chip admin__done_search_chip';
     btn.dataset.id = String(id);
     btn.textContent = name;
