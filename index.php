@@ -23,6 +23,9 @@
         $error = $_SESSION['auth_error'] ?? null;
         unset($_SESSION['auth_error']); //unset удалить
     ?>
+    <?php if ($isAuth && !$isAdmin): ?>
+    <div class="user__desktop_column">
+    <?php endif ?>
     <?php
         if ($isAuth): 
     ?>
@@ -200,13 +203,17 @@
             </div>
         </section>
     </div> 
+    <?php if ($isAuth && !$isAdmin): ?>
+    </div>
+    <?php endif ?>
 
 
     <section class="offers offers__available" data-section="available">
-        <h2 class = "offers__available_title">All global offers  🌎</h2>
+        <?php if (!$isAuth): ?><h2 class = "offers__available_title">All global offers  🌎</h2>    <?php endif ?>
         <div class="offers__section_body offers__section_body_available">
-
             <div class="offers__containers_searching">
+                <?php if ($isAuth): ?><h2 class = "offers__available_title">All global offers  🌎</h2><?php endif ?>
+                <?php if ($isAuth): ?><div class="offers__search_categories offers__available_search_categories offers__available_categories-desktop"></div><?php endif ?>
                 <div class = "offers__available_top">
                     <input class="offers__search_input offers__available_search_input" type="search" placeholder="Search offer...">
                     <div class="offers__search_sort">
@@ -218,7 +225,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="offers__search_categories offers__available_search_categories"></div>
+                <div class="offers__search_categories offers__available_search_categories offers__available_categories-phone"></div>
+                <?php if (!$isAuth): ?><div class="offers__search_categories offers__available_search_categories offers__available_categories-desktop"></div><?php endif ?>
             </div>
 
             <div class="offers__containers offers__available_containers"></div>

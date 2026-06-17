@@ -139,31 +139,32 @@ function renderAvailable() {
 }
 
 function renderAvailableCategories(chipMap) {
-  const box = document.querySelector('.offers__available_search_categories');
-  if (!box) return;
+  const boxes = document.querySelectorAll('.offers__available_search_categories');
+  if (!boxes.length) return;
 
-  box.innerHTML = '';
+  boxes.forEach((box) => {
+    box.innerHTML = '';
 
-  const allBtn = document.createElement('button');
-  allBtn.type = 'button';
-  allBtn.className = availableSelectedCategoryId === 0
-    ? 'offers__search_chip offers__available_search_chip offers__search_chip-active'
-    : 'offers__search_chip offers__available_search_chip';
-  allBtn.dataset.id = '0';
-  allBtn.textContent = 'All';
-  box.appendChild(allBtn);
-
-  for (const [id, name] of chipMap) {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = Number(id) === availableSelectedCategoryId
-      ? `offers__search_chip offers__available_search_chip offers__search_chip-active ${categoryColorClass(id)}`
+    const allBtn = document.createElement('button');
+    allBtn.type = 'button';
+    allBtn.className = availableSelectedCategoryId === 0
+      ? 'offers__search_chip offers__available_search_chip offers__search_chip-active'
       : 'offers__search_chip offers__available_search_chip';
-    btn.dataset.id = String(id);
-    btn.textContent = name || 'No category';
-    box.appendChild(btn);
-  }
+    allBtn.dataset.id = '0';
+    allBtn.textContent = 'All';
+    box.appendChild(allBtn);
 
+    for (const [id, name] of chipMap) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = Number(id) === availableSelectedCategoryId
+        ? `offers__search_chip offers__available_search_chip offers__search_chip-active ${categoryColorClass(id)}`
+        : 'offers__search_chip offers__available_search_chip';
+      btn.dataset.id = String(id);
+      btn.textContent = name || 'No category';
+      box.appendChild(btn);
+    }
+  });
 }
 function renderConsidered() {
 
