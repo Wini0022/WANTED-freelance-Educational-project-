@@ -160,22 +160,39 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    if (localStorage.getItem('make-panel-open') === '1') {
-        panel.classList.add('admin__make_panel-active');
+    function setMakePanelOpen(isOpen) {
+        panel.style.height = '';
+        panel.classList.toggle('admin__make_panel-active', isOpen);
+
+        if (isOpen) {
+            localStorage.setItem('make-panel-open', '1');
+        } else {
+            localStorage.removeItem('make-panel-open');
+        }
     }
 
+    function isDesktopAdmin() {
+        return window.matchMedia('(min-width: 900px)').matches;
+    }
+
+    if (localStorage.getItem('make-panel-open') === '1') {
+        setMakePanelOpen(true);
+    }
 
     if (makeTrigger) {
         makeTrigger.addEventListener('click', () => {
-            panel.classList.add('admin__make_panel-active');
-            localStorage.setItem('make-panel-open', '1');
+            if (isDesktopAdmin()) {
+                setMakePanelOpen(!panel.classList.contains('admin__make_panel-active'));
+                return;
+            }
+
+            setMakePanelOpen(true);
         });
     }
 
     if (makeClose) {
         makeClose.addEventListener('click', () => {
-            panel.classList.remove('admin__make_panel-active');
-            localStorage.removeItem('make-panel-open');
+            setMakePanelOpen(false);
         });
     }
 

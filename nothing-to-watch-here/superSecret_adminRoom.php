@@ -13,7 +13,7 @@
     <title><?= $_SESSION['name']?>'s Admin panel</title>
     <link rel="stylesheet" href="../style.css">
 </head>
-<body>
+<body class="admin-page">
     <div class = "admin__top">
         <a class = "admin__leave" href="../index.php"><img src = "../images/chat__leave-button.svg"></a>
         <a class = "admin__logout" href="../logout.php">Log out</a>
