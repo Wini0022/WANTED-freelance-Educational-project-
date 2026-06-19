@@ -3602,6 +3602,10 @@ textarea.make__container[name="description"] {
         box-sizing: border-box;
         padding-inline: 2rem;
     }
+    #chat-actions-menu {
+        top: 4.5rem;
+        right: 1rem;
+    }
 
     body:has(.offers__admin-hidden):not(:has(.user__desktop_column)) .header__logo {
         margin-left: 0;
