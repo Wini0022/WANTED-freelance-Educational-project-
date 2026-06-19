@@ -1,7 +1,7 @@
 # Rush 🦐
 
-<p align="center">
-  <img src="readme_images/rush_logo.png" width="180" alt="rush_logo">
+<p align="left">
+  <img src="readme_images/rush_logo.png" width="300" alt="rush_logo">
 </p>
 
 **Rush** — это учебный full-stack проект биржи фриланса.  
