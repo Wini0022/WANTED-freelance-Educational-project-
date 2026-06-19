@@ -1,6 +1,6 @@
 # Rush 🦐
 
-<p align="left">
+<p align="center">
   <img src="readme_images/rush_logo.png" width="300" alt="rush_logo">
 </p>
 
